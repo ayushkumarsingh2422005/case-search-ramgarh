@@ -242,7 +242,7 @@ export default function Dashboard() {
                     setSearchFilters({ ...searchFilters, policeStation: e.target.value });
                     setPage(1);
                   }}
-                  placeholder="e.g., Town"
+                  placeholder="e.g., Ramgarh"
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
                 />
               </div>
