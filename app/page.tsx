@@ -2,9 +2,7 @@
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { AuthGuard } from "../components/AuthGuard";
-import { useAuth } from "../contexts/AuthContext";
-
-import Image from "next/image";
+import { AppShell } from "../components/AppShell";
 
 type CaseStatus = "Disposed" | "Under investigation";
 type InvestigationStatus = "Detected" | "Undetected";
@@ -361,7 +359,6 @@ const DISTRICTS_BY_STATE: Record<string, string[]> = {
 };
 
 export default function Home() {
-  const { user } = useAuth();
   const currentYear = new Date().getFullYear();
   const years = useMemo(() => Array.from({ length: currentYear - 1999 }, (_, i) => 2000 + i), [currentYear]);
 
@@ -1362,101 +1359,18 @@ export default function Home() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen">
-        {/* Header */}
-        <header className="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center gap-4">
-                <div className="flex-shrink-0 flex items-center">
-                  <Image src="/logo.png" alt="Jharkhand" width={40} height={40} className="h-10 w-auto" />
+      <AppShell title="Search Cases" subtitle="Find and filter cases across Ramgarh">
+        {/* Search Card */}
+        <div className="prism-card overflow-hidden">
+            <div className="px-4 py-4 md:px-6 md:py-5 border-b border-slate-100 bg-gradient-to-r from-blue-50/80 to-white">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-blue-600 text-white grid place-content-center shadow-lg shadow-blue-600/20">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
                 </div>
-                <h1 className="text-xl font-bold text-slate-900 hidden md:block">Case Search System</h1>
-              </div>
-              <div className="flex items-center gap-4">
-                {user?.role === "SuperAdmin" && (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      className="text-sm text-slate-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href="/admin"
-                      className="text-sm text-slate-600 hover:text-purple-700 font-medium flex items-center gap-1 transition-colors"
-                    >
-                      Admin
-                    </Link>
-                  </>
-                )}
-
-                {user?.role === "SuperAdmin" && (
-                  <Link
-                    href="/add"
-                    className="text-sm text-white bg-blue-700 hover:bg-blue-800 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 transition-colors shadow-sm"
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="12" y1="5" x2="12" y2="19" />
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                    <span className="hidden sm:inline">Add Case</span>
-                  </Link>
-                )}
-
-                <div className="h-6 w-px bg-slate-200 mx-2"></div>
-
-                <div className="flex items-center gap-3">
-                  <div className="text-right hidden sm:block">
-                    <div className="text-sm font-medium text-slate-900">{user?.email || "Loading..."}</div>
-                    <div className="text-xs text-slate-500">{user?.role || ""}</div>
-                  </div>
-                  <button
-                    onClick={async () => {
-                      await fetch("/api/auth/logout", { method: "POST" });
-                      window.location.href = "/login";
-                    }}
-                    className="p-2 text-slate-400 hover:text-red-600 transition-colors rounded-full hover:bg-red-50"
-                    title="Logout"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                      <polyline points="16 17 21 12 16 7" />
-                      <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
-                  </button>
+                <div>
+                  <h2 className="text-base md:text-lg font-semibold tracking-wide text-slate-900">Search Cases</h2>
+                  <p className="text-xs md:text-sm text-slate-600">Use filters to quickly locate a case</p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Content */}
-        <main className="mx-auto max-w-7xl p-4 md:p-6">
-          {/* Search Card */}
-          <div className="bg-white rounded-lg shadow-sm ring-1 ring-slate-200">
-            <div className="px-4 py-4 md:px-6 md:py-5 border-b border-slate-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-blue-600/10 text-blue-700 grid place-content-center">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-                  </div>
-                  <div>
-                    <h2 className="text-base md:text-lg font-semibold tracking-wide">Search Cases</h2>
-                    <p className="text-xs md:text-sm text-slate-600">Use filters to quickly locate a case</p>
-                  </div>
-                </div>
-                <Link
-                  href="/chargesheet-status"
-                  className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-sm text-slate-700 font-medium shadow-sm ring-1 ring-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 transition-colors"
-                >
-                  <svg className="h-4 w-4 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                  Pending Chargesheets
-                </Link>
               </div>
             </div>
 
@@ -2629,7 +2543,7 @@ export default function Home() {
           </div>
 
           {/* Results Table */}
-          <div className="mt-6 bg-white rounded-lg shadow-sm ring-1 ring-slate-200 overflow-hidden">
+          <div className="mt-6 prism-card overflow-hidden">
             {dataLoading ? (
               <div className="p-8 text-center">
                 <svg className="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" viewBox="0 0 24 24">
@@ -2816,7 +2730,6 @@ export default function Home() {
               </>
             )}
           </div>
-        </main>
 
         {/* Add Reason Modal */}
         {showAddReasonModal && (
@@ -2913,7 +2826,7 @@ export default function Home() {
             </div>
           </div>
         )}
-      </div>
+      </AppShell>
     </AuthGuard>
   );
 }

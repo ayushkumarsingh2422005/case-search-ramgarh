@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../contexts/AuthContext";
 
-const inter = Inter({
+const sans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const mono = Roboto_Mono({
+const mono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Jharkhand Police Case Management System",
-  description: "Jharkhand Police Case Management System",
+  title: "PRISM | Ramgarh Police",
+  description: "Police Review of Investigation Status & Monitoring — Ramgarh Police",
 };
 
 export default function RootLayout({
@@ -26,11 +26,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${mono.variable} antialiased bg-slate-100 text-slate-900 min-h-screen`}
+        className={`${sans.variable} ${mono.variable} antialiased bg-[#f4f7fb] text-slate-900 min-h-screen`}
+        style={{ fontFamily: "var(--font-sans), system-ui, sans-serif" }}
       >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

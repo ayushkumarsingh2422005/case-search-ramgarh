@@ -1,5 +1,6 @@
 "use client";
 import { SuperAdminGuard } from "../../components/AuthGuard";
+import { AppShell } from "../../components/AppShell";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -1018,7 +1019,7 @@ export default function AddCase() {
         throw new Error(data.error || "Failed to create case");
       }
 
-      router.push(`/dashboard`);
+      router.push(`/manage`);
     } catch (err: any) {
       setError(err.message || "An error occurred");
     } finally {
@@ -1028,12 +1029,12 @@ export default function AddCase() {
 
   return (
     <SuperAdminGuard>
-      <div className="mx-auto max-w-7xl p-4 md:p-6">
+      <AppShell title="Add New Case" subtitle="Enter case details below">
         {/* Breadcrumbs */}
         <div className="mb-4 text-sm text-slate-600">
           <Link href="/" className="text-blue-700 hover:underline">Search</Link>
           <span className="mx-2">/</span>
-          <Link href="/dashboard" className="text-blue-700 hover:underline">Dashboard</Link>
+          <Link href="/manage" className="text-blue-700 hover:underline">Manage</Link>
           <span className="mx-2">/</span>
           <span className="font-medium">Add Case</span>
         </div>
@@ -2794,7 +2795,7 @@ export default function AddCase() {
             {/* Submit Buttons */}
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
               <Link
-                href="/dashboard"
+                href="/manage"
                 className="px-4 py-2 text-slate-700 border border-slate-300 rounded-md hover:bg-slate-50 font-medium transition-colors"
               >
                 Cancel
@@ -2826,7 +2827,7 @@ export default function AddCase() {
             </div>
           </div>
         </form>
-      </div>
+      </AppShell>
     </SuperAdminGuard>
   );
 }

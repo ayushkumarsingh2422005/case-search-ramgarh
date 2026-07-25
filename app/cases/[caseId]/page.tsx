@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AuthGuard } from "../../../components/AuthGuard";
+import { AppShell } from "../../../components/AppShell";
 import { useAuth } from "../../../contexts/AuthContext";
 
 type AccusedStatus = "Arrested" | "Not arrested" | "Decision pending" | "Pending Verification";
@@ -623,14 +624,14 @@ export default function CaseDetail() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-7xl p-4 md:p-6">
+      <AppShell title={`Case ${summary.caseNo}`} subtitle={`${summary.policeStation} • Ramgarh Police`}>
         {/* Breadcrumbs */}
         <div className="mb-4 text-sm text-slate-600">
           <Link href="/" className="text-blue-700 hover:underline">Search</Link>
           {user?.role === "SuperAdmin" && (
             <>
               <span className="mx-2">/</span>
-              <Link href="/dashboard" className="text-blue-700 hover:underline">Dashboard</Link>
+              <Link href="/manage" className="text-blue-700 hover:underline">Manage</Link>
             </>
           )}
           <span className="mx-2">/</span>
@@ -1386,7 +1387,7 @@ export default function CaseDetail() {
             )}
           </div>
         </div>
-      </div>
+      </AppShell>
     </AuthGuard>
   );
 }

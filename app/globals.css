@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+:root {
+  --navy: #0b1f3a;
+  --navy-deep: #071526;
+  --navy-mid: #123056;
+  --navy-light: #1a3f6d;
+  --accent: #2f6fed;
+  --accent-soft: #e8f0fe;
+  --surface: #f4f7fb;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --info: #0284c7;
+  --violet: #7c3aed;
+}
+
+body {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.prism-card {
+  background: var(--card);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.04);
+  border: 1px solid rgb(226 232 240 / 0.9);
+}
+
+.prism-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.prism-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}

@@ -2,7 +2,7 @@
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { AuthGuard } from "../../components/AuthGuard";
-import { useAuth } from "../../contexts/AuthContext";
+import { AppShell } from "../../components/AppShell";
 
 type CaseStatus = "Disposed" | "Under investigation";
 type InvestigationStatus = "Detected" | "Undetected";
@@ -34,7 +34,6 @@ type CaseRow = {
 };
 
 export default function ChargesheetStatusPage() {
-    const { user } = useAuth();
     const [data, setData] = useState<CaseRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({
@@ -161,27 +160,16 @@ export default function ChargesheetStatusPage() {
 
     return (
         <AuthGuard>
-            <div className="min-h-screen bg-slate-50 pb-12">
-                {/* Header */}
-                <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-center justify-between h-16">
-                            <div className="flex items-center gap-4">
-                                <Link href="/" className="text-slate-500 hover:text-slate-700 transition-colors">
-                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                    </svg>
-                                </Link>
-                                <h1 className="text-xl font-bold text-slate-900">Pending Chargesheets (By Accused)</h1>
-                            </div>
-                            <div className="text-sm text-slate-500">
-                                {filteredList.length} of {pendingAccusedList.length} Accused
-                            </div>
+            <AppShell title="Pending Chargesheet" subtitle="Accused-level pending and overdue chargesheets">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <p className="text-sm text-slate-600">Track chargesheet deadlines by accused</p>
+                        </div>
+                        <div className="text-sm font-medium text-slate-700 bg-orange-50 ring-1 ring-orange-200 rounded-full px-3 py-1">
+                            {filteredList.length} of {pendingAccusedList.length} Accused
                         </div>
                     </div>
-                </div>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Filters */}
                     <div className="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 mb-6 overflow-hidden">
                         <div className="px-4 py-3 md:px-6 border-b border-slate-200">
@@ -323,8 +311,7 @@ export default function ChargesheetStatusPage() {
                             </div>
                         </div>
                     )}
-                </div>
-            </div>
+            </AppShell>
         </AuthGuard>
     );
 }
