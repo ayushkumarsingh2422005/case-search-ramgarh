@@ -75,6 +75,9 @@ export default function LandingPage() {
             <h2 className="max-w-xl text-2xl font-semibold leading-snug sm:text-3xl">
               Police Review of Investigation Status &amp; Monitoring
             </h2>
+            <p className="mt-3 max-w-xl text-lg italic text-sky-300 sm:text-xl">
+              “From FIR to Final Report—Under One Prism.”
+            </p>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
               Search cases, track chargesheets, monitor investigations, and manage station records for
               Ramgarh Police in one secure system.

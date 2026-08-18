@@ -73,6 +73,9 @@ export default function LoginPage() {
           <h2 className="text-3xl font-bold leading-tight">
             Police Review of Investigation Status & Monitoring
           </h2>
+          <p className="text-lg italic text-sky-300">
+            “From FIR to Final Report—Under One Prism.”
+          </p>
           <p className="text-slate-300 text-sm leading-relaxed">
             Search cases, track chargesheets, monitor investigations, and manage station records in one place.
           </p>
