@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { HiOutlineLockClosed, HiOutlineMail, HiOutlineShieldCheck } from "react-icons/hi";
+import Image from "next/image";
+import Link from "next/link";
+import { HiOutlineLockClosed, HiOutlineMail } from "react-icons/hi";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginPage() {
@@ -52,15 +54,20 @@ export default function LoginPage() {
         <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blue-500/20" />
         <div className="absolute -bottom-16 -left-10 h-64 w-64 rounded-full bg-emerald-400/10" />
         <div className="relative">
-          <div className="flex items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#2f6fed] text-white">
-              <HiOutlineShieldCheck className="h-7 w-7" />
-            </span>
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="Jharkhand Police"
+              width={64}
+              height={64}
+              className="h-16 w-16 object-contain mix-blend-screen"
+              priority
+            />
             <div>
               <div className="text-2xl font-bold tracking-wide">PRISM</div>
               <div className="text-xs text-slate-300">Ramgarh Police, Jharkhand</div>
             </div>
-          </div>
+          </Link>
         </div>
         <div className="relative space-y-4 max-w-md">
           <h2 className="text-3xl font-bold leading-tight">
@@ -78,9 +85,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <div className="prism-card p-8">
             <div className="mb-8 lg:hidden flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0b1f3a] text-white">
-                <HiOutlineShieldCheck className="h-5 w-5" />
-              </span>
+              <Image src="/logo.png" alt="Jharkhand Police" width={48} height={48} className="h-12 w-12 object-contain" />
               <div>
                 <div className="font-bold text-slate-900">PRISM</div>
                 <div className="text-xs text-slate-500">Ramgarh Police</div>
@@ -140,6 +145,11 @@ export default function LoginPage() {
                 {loading ? "Signing in..." : "Sign In"}
               </button>
             </form>
+            <p className="mt-6 text-center text-sm text-slate-500">
+              <Link href="/" className="font-medium text-blue-700 hover:underline">
+                Back to home
+              </Link>
+            </p>
           </div>
         </div>
       </div>

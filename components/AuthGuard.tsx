@@ -40,7 +40,7 @@ export function SuperAdminGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "SuperAdmin")) {
-      router.push("/");
+      router.push("/search");
     }
   }, [user, loading, router]);
 

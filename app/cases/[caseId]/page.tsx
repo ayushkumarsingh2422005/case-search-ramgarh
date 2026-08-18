@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AuthGuard } from "../../../components/AuthGuard";
 import { AppShell } from "../../../components/AppShell";
 import { useAuth } from "../../../contexts/AuthContext";
+import { getChargesheetAlertFromFir } from "@/lib/chargesheetDeadline";
 
 type AccusedStatus = "Arrested" | "Not arrested" | "Decision pending" | "Pending Verification";
 type CaseStatus = "Disposed" | "Under investigation";
@@ -400,39 +401,10 @@ export default function CaseDetail() {
     }
   };
 
-  // Calculate chargesheet alert
+  // Calculate chargesheet alert from FIR / case date
   const chargesheetAlert = useMemo(() => {
-    if (!caseData || caseData.finalChargesheetSubmitted) return null;
-
-    const deadlineType = caseData.chargesheetDeadlineType || "60";
-    const deadlineDays = parseInt(deadlineType);
-
-    // Find earliest arrest date from accused who don't have chargesheet filed yet
-    const arrestDates = (caseData.accused || [])
-      .filter((acc: any) => !acc.chargesheet?.date) // Only consider accused without chargesheet
-      .map((acc: any) => acc.arrestedDate || acc.arrestedOn)
-      .filter((date: any) => date)
-      .map((date: string) => new Date(date).getTime())
-      .filter((timestamp: number) => !isNaN(timestamp));
-
-    if (arrestDates.length === 0) return null;
-
-    const earliestArrestDate = new Date(Math.min(...arrestDates));
-    const deadlineDate = new Date(earliestArrestDate);
-    deadlineDate.setDate(deadlineDate.getDate() + deadlineDays);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    deadlineDate.setHours(0, 0, 0, 0);
-
-    const daysRemaining = Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-    return {
-      daysRemaining,
-      deadlineDate: deadlineDate.toISOString().split('T')[0],
-      deadlineType,
-      isOverdue: daysRemaining < 0,
-    };
+    if (!caseData) return null;
+    return getChargesheetAlertFromFir(caseData);
   }, [caseData]);
 
   const accused: AccusedInfo[] = useMemo(() => {
@@ -565,31 +537,17 @@ export default function CaseDetail() {
     return diffDays;
   };
 
-  // Charge sheet alert calculation
-  const getChargesheetAlert = (arrestedOn?: string, accusedChargesheet?: any) => {
-    if (!arrestedOn || !caseData || caseData.finalChargesheetSubmitted) return null;
-
-    // Skip if this accused already has their chargesheet filed
+  // Charge sheet alert from FIR date (same for all accused on this case)
+  const getChargesheetAlert = (accusedChargesheet?: any) => {
+    if (!caseData) return null;
     if (accusedChargesheet?.date) return null;
-
-    const deadlineType = caseData.chargesheetDeadlineType || "60";
-    const deadlineDays = parseInt(deadlineType);
-
-    const arrestDate = new Date(arrestedOn);
-    const deadlineDate = new Date(arrestDate);
-    deadlineDate.setDate(deadlineDate.getDate() + deadlineDays);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    deadlineDate.setHours(0, 0, 0, 0);
-
-    const daysRemaining = Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
+    const alert = getChargesheetAlertFromFir(caseData);
+    if (!alert) return null;
     return {
-      type: `${deadlineType}-day`,
-      daysRemaining: daysRemaining,
-      overdue: daysRemaining < 0,
-      alert: true
+      type: `${alert.deadlineType}-day`,
+      daysRemaining: alert.daysRemaining,
+      overdue: alert.isOverdue,
+      alert: true,
     };
   };
 
@@ -616,7 +574,7 @@ export default function CaseDetail() {
       <div className="mx-auto max-w-7xl p-4 md:p-6">
         <div className="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 p-8 text-center">
           <p className="text-red-600 mb-4">{error || "Case not found"}</p>
-          <Link href="/" className="text-blue-700 hover:underline">Back to Search</Link>
+          <Link href="/search" className="text-blue-700 hover:underline">Back to Search</Link>
         </div>
       </div>
     );
@@ -627,7 +585,7 @@ export default function CaseDetail() {
       <AppShell title={`Case ${summary.caseNo}`} subtitle={`${summary.policeStation} • Ramgarh Police`}>
         {/* Breadcrumbs */}
         <div className="mb-4 text-sm text-slate-600">
-          <Link href="/" className="text-blue-700 hover:underline">Search</Link>
+          <Link href="/search" className="text-blue-700 hover:underline">Search</Link>
           {user?.role === "SuperAdmin" && (
             <>
               <span className="mx-2">/</span>
@@ -677,7 +635,7 @@ export default function CaseDetail() {
                         ? "text-orange-700"
                         : "text-blue-700"
                       }`}>
-                      Deadline: {new Date(chargesheetAlert.deadlineDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} ({chargesheetAlert.deadlineType} days from earliest arrest)
+                      Deadline: {new Date(chargesheetAlert.deadlineDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} ({chargesheetAlert.deadlineType} days from FIR date)
                     </p>
                   </div>
                 </div>
@@ -870,7 +828,7 @@ export default function CaseDetail() {
                     <tbody className="divide-y divide-slate-200">
                       {accused.map((a) => {
                         const daysAfterArrest = getDaysAfterArrest(a.arrestedOn);
-                        const alert = getChargesheetAlert(a.arrestedOn, a.chargesheet);
+                        const alert = getChargesheetAlert(a.chargesheet);
                         return (
                           <tr key={a.name} className="hover:bg-slate-50">
                             <td className="px-4 py-2">{a.name}</td>

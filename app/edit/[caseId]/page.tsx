@@ -1309,7 +1309,7 @@ export default function EditCase() {
       <AppShell title="Edit Case" subtitle="Update case details">
         {/* Breadcrumbs */}
         <div className="mb-4 text-sm text-slate-600">
-          <Link href="/" className="text-blue-700 hover:underline">Search</Link>
+          <Link href="/search" className="text-blue-700 hover:underline">Search</Link>
           <span className="mx-2">/</span>
           <Link href="/manage" className="text-blue-700 hover:underline">Manage</Link>
           <span className="mx-2">/</span>
@@ -1470,6 +1470,20 @@ export default function EditCase() {
                     <option value="Under investigation">Under investigation</option>
                     <option value="Disposed">Disposed</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Chargesheet Deadline *</label>
+                  <select
+                    name="chargesheetDeadlineType"
+                    value={formData.chargesheetDeadlineType}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                  >
+                    <option value="60">60 Days</option>
+                    <option value="90">90 Days</option>
+                  </select>
+                  <p className="text-xs text-slate-500 mt-1">Counted from FIR / case date</p>
                 </div>
                 {formData.caseStatus === "Under investigation" && (
                   <div>
@@ -2494,20 +2508,6 @@ export default function EditCase() {
                   </div>
                 </div>
                 <div className="pt-3 border-t border-slate-200 space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Chargesheet Deadline Type *</label>
-                    <select
-                      name="chargesheetDeadlineType"
-                      value={formData.chargesheetDeadlineType}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                    >
-                      <option value="60">60 Days</option>
-                      <option value="90">90 Days</option>
-                    </select>
-                    <p className="text-xs text-slate-500 mt-1">Chargesheet must be filed within this period from arrest date</p>
-                  </div>
                   <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
                     <input
                       type="checkbox"

@@ -37,6 +37,7 @@ import {
 } from "recharts";
 import { AuthGuard } from "../../components/AuthGuard";
 import { AppShell } from "../../components/AppShell";
+import { getChargesheetAlertFromFir } from "../../lib/chargesheetDeadline";
 
 type Accused = {
   name?: string;
@@ -286,23 +287,11 @@ export default function StatsDashboardPage() {
       }
 
       if (!c.finalChargesheetSubmitted) {
-        const deadlineDays = parseInt(c.chargesheetDeadlineType || "60", 10) || 60;
-        for (const acc of c.accused || []) {
-          if (acc.chargesheet?.date) continue;
-          const arrestStr = acc.arrestedDate || acc.arrestedOn;
-          if (!arrestStr) continue;
-          if (acc.status !== "Arrested" && acc.status !== "Pending Verification") continue;
-          const arrestDate = new Date(arrestStr);
-          if (isNaN(arrestDate.getTime())) continue;
-          const deadline = new Date(arrestDate);
-          deadline.setDate(deadline.getDate() + deadlineDays);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          deadline.setHours(0, 0, 0, 0);
-          const daysRemaining = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const alert = getChargesheetAlertFromFir(c);
+        if (alert) {
           pendingCs += 1;
-          if (daysRemaining < 0) overdueCs += 1;
-          else if (daysRemaining <= 7) due7 += 1;
+          if (alert.isOverdue) overdueCs += 1;
+          else if (alert.daysRemaining <= 7) due7 += 1;
         }
       }
     }
@@ -482,21 +471,7 @@ export default function StatsDashboardPage() {
     if (tableTab === "important") {
       rows = rows.filter((c) => c.priority === "Under monitoring");
     } else if (tableTab === "overdue") {
-      rows = rows.filter((c) => {
-        if (c.finalChargesheetSubmitted) return false;
-        const deadlineDays = parseInt(c.chargesheetDeadlineType || "60", 10) || 60;
-        return (c.accused || []).some((acc) => {
-          if (acc.chargesheet?.date) return false;
-          const arrestStr = acc.arrestedDate || acc.arrestedOn;
-          if (!arrestStr) return false;
-          if (acc.status !== "Arrested" && acc.status !== "Pending Verification") return false;
-          const arrestDate = new Date(arrestStr);
-          if (isNaN(arrestDate.getTime())) return false;
-          const deadline = new Date(arrestDate);
-          deadline.setDate(deadline.getDate() + deadlineDays);
-          return deadline.getTime() < Date.now();
-        });
-      });
+      rows = rows.filter((c) => Boolean(getChargesheetAlertFromFir(c)?.isOverdue));
     }
     return rows
       .sort((a, b) => {
@@ -1042,7 +1017,7 @@ export default function StatsDashboardPage() {
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { href: "/add", label: "Add Case", icon: HiOutlinePlus, color: "bg-blue-50 text-blue-700" },
-                    { href: "/", label: "Search Cases", icon: HiOutlineSearchCircle, color: "bg-emerald-50 text-emerald-700" },
+                    { href: "/search", label: "Search Cases", icon: HiOutlineSearchCircle, color: "bg-emerald-50 text-emerald-700" },
                     { href: "/chargesheet-status", label: "Pending CS", icon: HiOutlineExclamationCircle, color: "bg-rose-50 text-rose-700" },
                     { href: "/manage", label: "Manage", icon: HiOutlineClipboardCheck, color: "bg-amber-50 text-amber-700" },
                     { href: "/admin", label: "Admin", icon: HiOutlineDocumentText, color: "bg-violet-50 text-violet-700" },
