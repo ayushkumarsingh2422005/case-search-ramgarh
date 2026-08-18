@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   HiOutlineViewGrid,
+  HiOutlineHome,
   HiOutlineSearch,
   HiOutlineExclamation,
   HiOutlineFolderOpen,
@@ -27,6 +28,12 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
+  {
+    href: "/home",
+    label: "Home",
+    icon: <HiOutlineHome className="h-5 w-5" />,
+    match: (p) => p === "/home",
+  },
   {
     href: "/dashboard",
     label: "Dashboard",
@@ -112,11 +119,13 @@ function NavLinks({
 export function AppShell({
   children,
   actions,
+  flush = false,
 }: {
   children: ReactNode;
   title?: string;
   subtitle?: string;
   actions?: ReactNode;
+  flush?: boolean;
 }) {
   const pathname = usePathname() || "/";
   const { user, logout } = useAuth();
@@ -128,7 +137,7 @@ export function AppShell({
   const sidebar = (
     <>
       <div className="border-b border-white/10 px-3 py-5">
-        <Link href="/dashboard" className="flex flex-col items-center text-center" onClick={() => setMobileOpen(false)}>
+        <Link href="/home" className="flex flex-col items-center text-center" onClick={() => setMobileOpen(false)}>
           <Image
             src="/logo.png"
             alt="Jharkhand Police"
@@ -209,7 +218,7 @@ export function AppShell({
           >
             <HiOutlineMenu className="h-5 w-5" />
           </button>
-          <Link href="/dashboard" className="flex items-center gap-2 font-bold text-[#0b1f3a]">
+          <Link href="/home" className="flex items-center gap-2 font-bold text-[#0b1f3a]">
             <Image src="/logo.png" alt="Jharkhand Police" width={44} height={44} className="h-11 w-11 object-contain" />
             PRISM
           </Link>
@@ -220,7 +229,7 @@ export function AppShell({
           <div className="hidden items-center justify-end gap-2 px-4 pt-4 md:px-6 lg:flex">{actions}</div>
         )}
 
-        <main className="mx-auto max-w-[1600px] p-4 md:p-6">{children}</main>
+        <main className={flush ? "" : "mx-auto max-w-[1600px] p-4 md:p-6"}>{children}</main>
       </div>
     </div>
   );

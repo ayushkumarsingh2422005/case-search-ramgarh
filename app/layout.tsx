@@ -15,7 +15,8 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "PRISM | Ramgarh Police",
-  description: "From FIR to Final Report—Under One Prism. Police Review of Investigation Status & Monitoring — Ramgarh Police",
+  description:
+    "From FIR to Final Report—Under One Prism. Police Review of Investigation Status & Monitoring — Ramgarh Police",
 };
 
 export default function RootLayout({

@@ -538,18 +538,18 @@ export default function StatsDashboardPage() {
               <KpiCard title="Disposed" value={stats.disposed} hint={`${stats.pct(stats.disposed)}% of total`} tone="violet" icon={<HiOutlineCheckCircle className="h-5 w-5" />} />
             </div>
 
-            {/* Row: status / trend / alerts */}
+            {/* Row: CS deadline / trend / alerts */}
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-              <ChartCard title="Case Status Overview" subtitle="Distribution of current case status">
+              <ChartCard title="CS Deadline Type" subtitle="60-day vs 90-day window">
                 <div className="h-56">
-                  {stats.donut.length === 0 ? (
+                  {stats.deadlinePie.length === 0 ? (
                     <div className="flex h-full items-center justify-center text-sm text-slate-400">No data</div>
                   ) : (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie data={stats.donut} dataKey="value" nameKey="name" innerRadius={55} outerRadius={80} paddingAngle={3}>
-                          {stats.donut.map((entry) => (
-                            <Cell key={entry.name} fill={entry.color} />
+                        <Pie data={stats.deadlinePie} dataKey="value" nameKey="name" innerRadius={55} outerRadius={80} paddingAngle={3}>
+                          {stats.deadlinePie.map((e) => (
+                            <Cell key={e.name} fill={e.color} />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -781,16 +781,16 @@ export default function StatsDashboardPage() {
                 </div>
               </ChartCard>
 
-              <ChartCard title="CS Deadline Type" subtitle="60-day vs 90-day window">
+              <ChartCard title="Case Status Overview" subtitle="Distribution of current case status">
                 <div className="h-52">
-                  {stats.deadlinePie.length === 0 ? (
+                  {stats.donut.length === 0 ? (
                     <div className="flex h-full items-center justify-center text-sm text-slate-400">No data</div>
                   ) : (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie data={stats.deadlinePie} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70} paddingAngle={2}>
-                          {stats.deadlinePie.map((e) => (
-                            <Cell key={e.name} fill={e.color} />
+                        <Pie data={stats.donut} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70} paddingAngle={2}>
+                          {stats.donut.map((entry) => (
+                            <Cell key={entry.name} fill={entry.color} />
                           ))}
                         </Pie>
                         <Tooltip />

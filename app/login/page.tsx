@@ -54,7 +54,7 @@ export default function LoginPage() {
         <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blue-500/20" />
         <div className="absolute -bottom-16 -left-10 h-64 w-64 rounded-full bg-emerald-400/10" />
         <div className="relative">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/login" className="flex items-center gap-3">
             <Image
               src="/logo.png"
               alt="Jharkhand Police"
@@ -77,9 +77,12 @@ export default function LoginPage() {
             “From FIR to Final Report—Under One Prism.”
           </p>
           <p className="text-slate-300 text-sm leading-relaxed">
-            Search cases, track chargesheets, monitor investigations, and manage station records in one place.
+            A digital investigation monitoring and supervision platform by Ramgarh Police for timely, quality-driven, scientific and accountable investigation.
           </p>
-          <p className="text-sm text-slate-400 pt-4">सुरक्षा • सेवा • विश्वास</p>
+          <p className="text-sm font-medium text-slate-200 pt-2">
+            One Platform. One View. One Goal.
+          </p>
+          <p className="text-sm text-slate-400">सुरक्षा • सेवा • विश्वास</p>
         </div>
         <div className="relative text-xs text-slate-500">© Ramgarh Police</div>
       </div>
@@ -149,9 +152,7 @@ export default function LoginPage() {
               </button>
             </form>
             <p className="mt-6 text-center text-sm text-slate-500">
-              <Link href="/" className="font-medium text-blue-700 hover:underline">
-                Back to home
-              </Link>
+              Sign in to access PRISM for Ramgarh Police
             </p>
           </div>
         </div>
