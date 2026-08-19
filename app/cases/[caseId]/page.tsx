@@ -655,17 +655,29 @@ export default function CaseDetail() {
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
+              {user?.role === "SuperAdmin" && (
+                <Link
+                  href={`/edit/${caseId}`}
+                  title="Edit Case"
+                  className="inline-flex items-center justify-center rounded-md bg-blue-600 p-2 text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={handlePrintPDF}
-                className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-white font-medium shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                title="Print PDF"
+                className="inline-flex items-center justify-center rounded-md bg-green-600 p-2 text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="6 9 6 2 18 2 18 9" />
                   <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                   <rect x="6" y="14" width="12" height="8" />
                 </svg>
-                Print PDF
               </button>
               <div className="flex items-center gap-2">
                 <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${summary.caseStatus === "Disposed" ? "bg-green-100 text-green-800 ring-green-600/20" :
