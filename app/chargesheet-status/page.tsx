@@ -3,6 +3,7 @@ import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { AuthGuard } from "../../components/AuthGuard";
 import { AppShell } from "../../components/AppShell";
+import { useAuth } from "../../contexts/AuthContext";
 import { getChargesheetAlertFromFir } from "../../lib/chargesheetDeadline";
 
 type CaseRow = {
@@ -18,6 +19,8 @@ type CaseRow = {
 };
 
 export default function ChargesheetStatusPage() {
+    const { user } = useAuth();
+    const scopedPoliceStation = user?.role === "Viewer" ? (user.policeStation || "") : "";
     const [data, setData] = useState<CaseRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({
@@ -25,6 +28,12 @@ export default function ChargesheetStatusPage() {
         status: "" as "" | "Overdue" | "Pending",
         policeStation: "",
     });
+
+    useEffect(() => {
+        if (scopedPoliceStation) {
+            setFilters((prev) => ({ ...prev, policeStation: scopedPoliceStation }));
+        }
+    }, [scopedPoliceStation]);
 
     useEffect(() => {
         fetchCases();
@@ -65,7 +74,7 @@ export default function ChargesheetStatusPage() {
     }, [pendingList, filters]);
 
     const resetFilters = () => {
-        setFilters({ deadlineType: "", status: "", policeStation: "" });
+        setFilters({ deadlineType: "", status: "", policeStation: scopedPoliceStation || "" });
     };
 
     const hasActiveFilters = Boolean(filters.deadlineType || filters.status || filters.policeStation);
@@ -114,10 +123,14 @@ export default function ChargesheetStatusPage() {
                                 <label className="block text-xs font-medium text-slate-700 mb-1.5">Police Station</label>
                                 <input
                                     type="text"
-                                    value={filters.policeStation}
-                                    onChange={(e) => setFilters({ ...filters, policeStation: e.target.value })}
+                                    value={scopedPoliceStation || filters.policeStation}
+                                    onChange={(e) => {
+                                        if (scopedPoliceStation) return;
+                                        setFilters({ ...filters, policeStation: e.target.value });
+                                    }}
+                                    disabled={Boolean(scopedPoliceStation)}
                                     placeholder="Search station..."
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm disabled:bg-slate-100 disabled:text-slate-600"
                                 />
                             </div>
                         </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { SuperAdminGuard } from "../../components/AuthGuard";
 import { AppShell } from "../../components/AppShell";
+import { POLICE_STATIONS } from "../../lib/policeStations";
 
 type CrimeHead = {
   _id: string;
@@ -23,6 +24,7 @@ type User = {
   _id: string;
   email: string;
   role: "SuperAdmin" | "Viewer";
+  policeStation?: string;
   createdAt?: string;
   createdBy?: string;
 };
@@ -58,6 +60,7 @@ export default function AdminPanel() {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userRole, setUserRole] = useState<"SuperAdmin" | "Viewer">("Viewer");
+  const [userPoliceStation, setUserPoliceStation] = useState("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const [investigatingOfficers, setInvestigatingOfficers] = useState<InvestigatingOfficer[]>([]);
@@ -74,7 +77,12 @@ export default function AdminPanel() {
       const response = await fetch("/api/auth/session");
       const data = await response.json();
       if (data.success && data.authenticated) {
-        setCurrentUser(data.user);
+        setCurrentUser({
+          _id: data.user.id,
+          email: data.user.email,
+          role: data.user.role,
+          policeStation: data.user.policeStation || "",
+        });
       }
     } catch (error) {
       console.error("Error fetching current user:", error);
@@ -343,12 +351,17 @@ export default function AdminPanel() {
     setUserEmail("");
     setUserPassword("");
     setUserRole("Viewer");
+    setUserPoliceStation("");
   };
 
   // User management functions
   const handleAddUser = async () => {
     if (!userEmail || !userPassword) {
       alert("Email and password are required");
+      return;
+    }
+    if (userRole === "Viewer" && !userPoliceStation) {
+      alert("Police Station is required for Viewer accounts");
       return;
     }
 
@@ -360,6 +373,7 @@ export default function AdminPanel() {
           email: userEmail.trim(),
           password: userPassword,
           role: userRole,
+          policeStation: userPoliceStation,
         }),
       });
 
@@ -368,6 +382,7 @@ export default function AdminPanel() {
         setUserEmail("");
         setUserPassword("");
         setUserRole("Viewer");
+        setUserPoliceStation("");
         fetchData();
       } else {
         alert(data.error || "Failed to create user");
@@ -382,6 +397,10 @@ export default function AdminPanel() {
       alert("Email is required");
       return;
     }
+    if (userRole === "Viewer" && !userPoliceStation) {
+      alert("Police Station is required for Viewer accounts");
+      return;
+    }
 
     try {
       const response = await fetch("/api/users", {
@@ -392,6 +411,7 @@ export default function AdminPanel() {
           email: userEmail.trim(),
           password: userPassword || undefined,
           role: userRole,
+          policeStation: userPoliceStation,
         }),
       });
 
@@ -401,6 +421,7 @@ export default function AdminPanel() {
         setUserEmail("");
         setUserPassword("");
         setUserRole("Viewer");
+        setUserPoliceStation("");
         fetchData();
       } else {
         alert(data.error || "Failed to update user");
@@ -436,6 +457,7 @@ export default function AdminPanel() {
     setUserEmail(user.email);
     setUserPassword("");
     setUserRole(user.role);
+    setUserPoliceStation(user.policeStation || "");
   };
 
   const handleAddIo = async (e: React.FormEvent) => {
@@ -909,12 +931,43 @@ export default function AdminPanel() {
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Role *</label>
                   <select
                     value={userRole}
-                    onChange={(e) => setUserRole(e.target.value as "SuperAdmin" | "Viewer")}
+                    onChange={(e) => {
+                      const role = e.target.value as "SuperAdmin" | "Viewer";
+                      setUserRole(role);
+                      if (role === "SuperAdmin") {
+                        // optional for SuperAdmin
+                      }
+                    }}
                     className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="Viewer">Viewer</option>
                     <option value="SuperAdmin">SuperAdmin</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Police Station {userRole === "Viewer" ? "*" : "(optional)"}
+                  </label>
+                  <select
+                    value={userPoliceStation}
+                    onChange={(e) => setUserPoliceStation(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required={userRole === "Viewer"}
+                  >
+                    <option value="">
+                      {userRole === "SuperAdmin" ? "All Police Stations" : "Select Police Station"}
+                    </option>
+                    {POLICE_STATIONS.map((ps) => (
+                      <option key={ps} value={ps}>
+                        {ps}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {userRole === "Viewer"
+                      ? "Viewer can only see cases of this police station."
+                      : "Leave empty so SuperAdmin can access all stations."}
+                  </p>
                 </div>
                 <div className="flex gap-3">
                   <button
@@ -951,6 +1004,7 @@ export default function AdminPanel() {
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">Email</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">Role</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">Police Station</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">Created</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase tracking-wider">Actions</th>
                       </tr>
@@ -967,6 +1021,9 @@ export default function AdminPanel() {
                             }`}>
                               {user.role}
                             </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">
+                            {user.policeStation || (user.role === "SuperAdmin" ? "All PS" : "—")}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                             {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}

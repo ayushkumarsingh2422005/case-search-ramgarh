@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
         id: user._id.toString(),
         email: user.email,
         role: user.role,
+        policeStation: user.policeStation || '',
       },
     });
   } catch (error: any) {

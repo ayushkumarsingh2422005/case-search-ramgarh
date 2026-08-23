@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB, Case } from '../../../../models';
+import { getAuthenticatedUser, getPoliceStationScope } from '../../../../lib/auth-helpers';
 
 /** Only treat as ObjectId when it is a 24-char hex string (avoids findById on ambiguous slugs). */
 function isMongoObjectId(id: string): boolean {
   return /^[a-fA-F0-9]{24}$/.test(id);
+}
+
+function assertCasePoliceStationAccess(
+  authUser: { role: string; policeStation: string },
+  caseData: { policeStation?: string }
+): NextResponse | null {
+  const psScope = getPoliceStationScope(authUser as any);
+  if (psScope === null) return null; // SuperAdmin
+  if (!psScope) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden. No police station assigned to your account.' },
+      { status: 403 }
+    );
+  }
+  if ((caseData.policeStation || '').trim() !== psScope) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden. This case belongs to another police station.' },
+      { status: 403 }
+    );
+  }
+  return null;
 }
 
 // GET - Fetch a single case by ID (Authenticated users only)
@@ -12,24 +34,10 @@ export async function GET(
   { params }: { params: Promise<{ caseId: string }> }
 ) {
   try {
-    // Check authentication
-    const token = request.cookies.get('auth-token')?.value;
-    if (!token) {
+    const authUser = await getAuthenticatedUser(request);
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized. Please login.' },
-        { status: 401 }
-      );
-    }
-
-    const jwt = require('jsonwebtoken');
-    try {
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-      );
-    } catch (error) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized. Invalid token.' },
         { status: 401 }
       );
     }
@@ -55,6 +63,9 @@ export async function GET(
       );
     }
 
+    const denied = assertCasePoliceStationAccess(authUser, caseData as any);
+    if (denied) return denied;
+
     return NextResponse.json({ success: true, data: caseData });
   } catch (error: any) {
     return NextResponse.json(
@@ -63,6 +74,7 @@ export async function GET(
     );
   }
 }
+
 
 // PUT - Update a case (SuperAdmin only)
 export async function PUT(

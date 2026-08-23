@@ -165,7 +165,10 @@ export function AppShell({
           </span>
           <span className="min-w-0 flex-1 text-left">
             <span className="block truncate text-xs font-semibold text-white">{user?.email}</span>
-            <span className="block text-[10px] text-slate-300">{user?.role}</span>
+            <span className="block text-[10px] text-slate-300">
+              {user?.role}
+              {user?.policeStation ? ` · ${user.policeStation}` : user?.role === "SuperAdmin" ? " · All PS" : ""}
+            </span>
           </span>
         </div>
         <button

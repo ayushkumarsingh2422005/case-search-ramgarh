@@ -1,27 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB, Case } from '../../../models';
+import { getAuthenticatedUser, getPoliceStationScope } from '../../../lib/auth-helpers';
 
 // GET - Fetch all cases with optional filters (Authenticated users only)
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const token = request.cookies.get('auth-token')?.value;
-    if (!token) {
+    const authUser = await getAuthenticatedUser(request);
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized. Please login.' },
-        { status: 401 }
-      );
-    }
-
-    const jwt = require('jsonwebtoken');
-    try {
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-      );
-    } catch (error) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized. Invalid token.' },
         { status: 401 }
       );
     }
@@ -36,6 +23,21 @@ export async function GET(request: NextRequest) {
     // Build filter object
     const filter: any = {};
 
+    // PS-scoped users (Viewers) can only see their assigned station
+    const psScope = getPoliceStationScope(authUser);
+    if (authUser.role !== 'SuperAdmin') {
+      if (!psScope) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+          pagination: { page, limit, total: 0, pages: 1 },
+        });
+      }
+      filter.policeStation = psScope;
+    } else if (searchParams.get('policeStation')) {
+      filter.policeStation = { $regex: searchParams.get('policeStation'), $options: 'i' };
+    }
+
     if (searchParams.get('caseNo')) {
       filter.caseNo = { $regex: searchParams.get('caseNo'), $options: 'i' };
     }
@@ -47,9 +49,6 @@ export async function GET(request: NextRequest) {
         $gte: parseInt(searchParams.get('yearFrom')!),
         $lte: parseInt(searchParams.get('yearTo')!),
       };
-    }
-    if (searchParams.get('policeStation')) {
-      filter.policeStation = { $regex: searchParams.get('policeStation'), $options: 'i' };
     }
     if (searchParams.get('crimeHead')) {
       filter.crimeHead = { $regex: searchParams.get('crimeHead'), $options: 'i' };
@@ -89,6 +88,7 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
 
 // POST - Create a new case (SuperAdmin only)
 export async function POST(request: NextRequest) {

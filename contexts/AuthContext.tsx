@@ -6,6 +6,7 @@ type User = {
   id: string;
   email: string;
   role: "SuperAdmin" | "Viewer";
+  policeStation?: string;
 };
 
 type AuthContextType = {

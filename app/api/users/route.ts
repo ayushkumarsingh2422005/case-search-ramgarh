@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB, User } from '../../../models';
 import jwt from 'jsonwebtoken';
+import { isValidPoliceStation } from '../../../lib/policeStations';
 
 // Helper function to verify authentication and get user
 async function getAuthenticatedUser(request: NextRequest) {
@@ -21,6 +22,26 @@ async function getAuthenticatedUser(request: NextRequest) {
   } catch (error) {
     return null;
   }
+}
+
+function normalizePoliceStation(role: string, policeStation: unknown): { value: string; error?: string } {
+  const value = typeof policeStation === 'string' ? policeStation.trim() : '';
+
+  if (role === 'Viewer') {
+    if (!value) {
+      return { value: '', error: 'Police Station is required for Viewer accounts' };
+    }
+    if (!isValidPoliceStation(value)) {
+      return { value: '', error: 'Invalid Police Station' };
+    }
+    return { value };
+  }
+
+  // SuperAdmin: optional; empty means all stations
+  if (value && !isValidPoliceStation(value)) {
+    return { value: '', error: 'Invalid Police Station' };
+  }
+  return { value };
 }
 
 // GET - Fetch all users (SuperAdmin only)
@@ -62,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     await connectDB();
-    const { email, password, role } = await request.json();
+    const { email, password, role, policeStation } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -88,10 +109,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const finalRole = role || 'Viewer';
+    const ps = normalizePoliceStation(finalRole, policeStation);
+    if (ps.error) {
+      return NextResponse.json({ success: false, error: ps.error }, { status: 400 });
+    }
+
     const newUser = new User({
       email: email.toLowerCase(),
       password,
-      role: role || 'Viewer',
+      role: finalRole,
+      policeStation: ps.value,
       createdBy: user.email,
     });
 
@@ -125,7 +153,7 @@ export async function PUT(request: NextRequest) {
     }
 
     await connectDB();
-    const { id, email, password, role } = await request.json();
+    const { id, email, password, role, policeStation } = await request.json();
 
     if (!id) {
       return NextResponse.json(
@@ -164,6 +192,30 @@ export async function PUT(request: NextRequest) {
 
     if (role && ['SuperAdmin', 'Viewer'].includes(role)) {
       userToUpdate.role = role;
+    }
+
+    if (policeStation !== undefined) {
+      const ps = normalizePoliceStation(userToUpdate.role, policeStation);
+      if (ps.error) {
+        return NextResponse.json({ success: false, error: ps.error }, { status: 400 });
+      }
+      userToUpdate.policeStation = ps.value;
+    } else if (userToUpdate.role === 'Viewer' && !userToUpdate.policeStation) {
+      return NextResponse.json(
+        { success: false, error: 'Police Station is required for Viewer accounts' },
+        { status: 400 }
+      );
+    }
+
+    if (userToUpdate.role === 'SuperAdmin' && policeStation === undefined) {
+      // keep existing; SuperAdmin may clear via empty string in policeStation field
+    }
+
+    if (userToUpdate.role === 'Viewer' && !String(userToUpdate.policeStation || '').trim()) {
+      return NextResponse.json(
+        { success: false, error: 'Police Station is required for Viewer accounts' },
+        { status: 400 }
+      );
     }
 
     await userToUpdate.save();
@@ -234,4 +286,3 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
-

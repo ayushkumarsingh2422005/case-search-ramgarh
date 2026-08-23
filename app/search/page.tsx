@@ -3,6 +3,7 @@ import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { AuthGuard } from "../../components/AuthGuard";
 import { AppShell } from "../../components/AppShell";
+import { useAuth } from "../../contexts/AuthContext";
 import { getChargesheetAlertFromFir } from "../../lib/chargesheetDeadline";
 
 type CaseStatus = "Disposed" | "Under investigation";
@@ -360,6 +361,8 @@ const DISTRICTS_BY_STATE: Record<string, string[]> = {
 };
 
 export default function Home() {
+  const { user } = useAuth();
+  const scopedPoliceStation = user?.role === "Viewer" ? (user.policeStation || "") : "";
   const currentYear = new Date().getFullYear();
   const years = useMemo(() => Array.from({ length: currentYear - 1999 }, (_, i) => 2000 + i), [currentYear]);
 
@@ -525,6 +528,16 @@ export default function Home() {
 
   const [data, setData] = useState<CaseRow[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    if (scopedPoliceStation) {
+      setFilters((prev) =>
+        prev.policeStation === scopedPoliceStation
+          ? prev
+          : { ...prev, policeStation: scopedPoliceStation }
+      );
+    }
+  }, [scopedPoliceStation]);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -1241,7 +1254,7 @@ export default function Home() {
       yearTo: "",
       yearBefore: "",
       yearAfter: "",
-      policeStation: "",
+      policeStation: scopedPoliceStation || "",
       crimeHead: "",
       investigatingOfficer: "",
       section: "",
@@ -1453,12 +1466,24 @@ export default function Home() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1.5">Police Station</label>
-                    <input list="ps-list" value={filters.policeStation} onChange={(e) => setFilters({ ...filters, policeStation: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Search station" />
-                    <datalist id="ps-list">
-                      {POLICE_STATIONS.map((ps) => (
-                        <option key={ps} value={ps} />
-                      ))}
-                    </datalist>
+                    <input
+                      list={scopedPoliceStation ? undefined : "ps-list"}
+                      value={scopedPoliceStation || filters.policeStation}
+                      onChange={(e) => {
+                        if (scopedPoliceStation) return;
+                        setFilters({ ...filters, policeStation: e.target.value });
+                      }}
+                      disabled={Boolean(scopedPoliceStation)}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow disabled:bg-slate-100 disabled:text-slate-600"
+                      placeholder="Search station"
+                    />
+                    {!scopedPoliceStation && (
+                      <datalist id="ps-list">
+                        {POLICE_STATIONS.map((ps) => (
+                          <option key={ps} value={ps} />
+                        ))}
+                      </datalist>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1.5">Crime Head</label>

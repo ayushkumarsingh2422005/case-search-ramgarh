@@ -6,6 +6,7 @@ export interface AuthUser {
   userId: string;
   email: string;
   role: 'SuperAdmin' | 'Viewer';
+  policeStation: string;
 }
 
 export async function getAuthenticatedUser(request: NextRequest): Promise<AuthUser | null> {
@@ -30,6 +31,7 @@ export async function getAuthenticatedUser(request: NextRequest): Promise<AuthUs
       userId: user._id.toString(),
       email: user.email,
       role: user.role as 'SuperAdmin' | 'Viewer',
+      policeStation: (user.policeStation || '').trim(),
     };
   } catch (error) {
     return null;

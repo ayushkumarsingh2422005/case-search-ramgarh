@@ -19,6 +19,12 @@ const UserSchema = new mongoose.Schema({
     default: 'Viewer',
     required: true,
   },
+  // Linked police station. Required for Viewer; SuperAdmin may leave empty (all PS).
+  policeStation: {
+    type: String,
+    trim: true,
+    default: '',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

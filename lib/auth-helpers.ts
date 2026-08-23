@@ -6,6 +6,7 @@ export interface AuthUser {
   userId: string;
   email: string;
   role: 'SuperAdmin' | 'Viewer';
+  policeStation: string;
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -33,10 +34,17 @@ export async function getAuthenticatedUser(request: NextRequest): Promise<AuthUs
       userId: user._id.toString(),
       email: user.email,
       role: user.role as 'SuperAdmin' | 'Viewer',
+      policeStation: (user.policeStation || '').trim(),
     };
   } catch (error) {
     return null;
   }
+}
+
+/** Exact police-station scope for non-SuperAdmin users. Null = no restriction. */
+export function getPoliceStationScope(user: AuthUser): string | null {
+  if (user.role === 'SuperAdmin') return null;
+  return user.policeStation || null;
 }
 
 /**

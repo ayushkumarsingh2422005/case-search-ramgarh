@@ -13,12 +13,12 @@ export default function RootPage() {
     router.replace(user ? "/home" : "/login");
   }, [user, loading, router]);
 
-  return (
+    return (
     <div className="flex min-h-screen items-center justify-center bg-[#0b1f3a]">
       <div className="text-center text-white">
         <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/30 border-t-white" />
         <p className="text-slate-300">Loading...</p>
+        </div>
       </div>
-    </div>
-  );
+    );
 }

@@ -37,6 +37,7 @@ import {
 } from "recharts";
 import { AuthGuard } from "../../components/AuthGuard";
 import { AppShell } from "../../components/AppShell";
+import { useAuth } from "../../contexts/AuthContext";
 import { getChargesheetAlertFromFir } from "../../lib/chargesheetDeadline";
 
 type Accused = {
@@ -163,6 +164,8 @@ function KpiCard({
 }
 
 export default function StatsDashboardPage() {
+  const { user } = useAuth();
+  const scopedPoliceStation = user?.role === "Viewer" ? (user.policeStation || "") : "";
   const [cases, setCases] = useState<CaseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -170,19 +173,23 @@ export default function StatsDashboardPage() {
   const [tableTab, setTableTab] = useState<"all" | "important" | "overdue">("all");
 
   useEffect(() => {
+    if (scopedPoliceStation) setStationFilter(scopedPoliceStation);
+  }, [scopedPoliceStation]);
+
+  useEffect(() => {
     const load = async () => {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
         const res = await fetch("/api/cases?limit=0");
         const data = await res.json();
         if (data.success) setCases(data.data || []);
         else setError(data.error || "Failed to load cases");
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Failed to load");
-      } finally {
-        setLoading(false);
-      }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
     load();
   }, []);
 
@@ -498,34 +505,42 @@ export default function StatsDashboardPage() {
         ) : (
           <div className="space-y-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+            <div>
                 <h2 className="text-lg font-semibold text-slate-900">Dashboard</h2>
                 <p className="text-sm text-slate-600">
                   Live overview of <span className="font-semibold text-slate-900">{stats.total}</span> cases
                   {stationFilter ? ` at ${stationFilter}` : " across all stations"} ·{" "}
                   <span className="font-medium">{stats.totalAccused}</span> accused
                 </p>
-              </div>
+            </div>
               <div className="flex flex-wrap items-center gap-2">
-                <select
-                  value={stationFilter}
-                  onChange={(e) => setStationFilter(e.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="">All Police Stations</option>
-                  {stations.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                <Link
-                  href="/add"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#2f6fed] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600"
-                >
-                  <HiOutlinePlus className="h-4 w-4" />
-                  Add Case
-                </Link>
+                {scopedPoliceStation ? (
+                  <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                    PS: {scopedPoliceStation}
+                  </span>
+                ) : (
+                  <select
+                    value={stationFilter}
+                    onChange={(e) => setStationFilter(e.target.value)}
+                    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  >
+                    <option value="">All Police Stations</option>
+                    {stations.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {user?.role === "SuperAdmin" && (
+                  <Link
+                    href="/add"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#2f6fed] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600"
+                  >
+                    <HiOutlinePlus className="h-4 w-4" />
+                    Add Case
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -609,8 +624,8 @@ export default function StatsDashboardPage() {
                           <div>
                             <p className="text-sm font-semibold">{a.title}</p>
                             <p className="text-xs opacity-80">{a.desc}</p>
-                          </div>
-                        </div>
+          </div>
+        </div>
                       );
                     })
                   )}
@@ -729,7 +744,7 @@ export default function StatsDashboardPage() {
                       <Bar dataKey="value" name="Cases" radius={[6, 6, 0, 0]} fill="#8b5cf6" />
                     </BarChart>
                   </ResponsiveContainer>
-                </div>
+              </div>
               </ChartCard>
 
               <ChartCard title="Cases by Year" subtitle="Registration year distribution">
@@ -743,7 +758,7 @@ export default function StatsDashboardPage() {
                       <Bar dataKey="value" name="Cases" radius={[6, 6, 0, 0]} fill="#2f6fed" />
                     </BarChart>
                   </ResponsiveContainer>
-                </div>
+              </div>
               </ChartCard>
 
               <ChartCard title="Chargesheet Status" subtitle="Filed / pending / overdue">
@@ -761,7 +776,7 @@ export default function StatsDashboardPage() {
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                </div>
+              </div>
               </ChartCard>
             </div>
 
@@ -778,7 +793,7 @@ export default function StatsDashboardPage() {
                       <Bar dataKey="value" name="Cases" radius={[0, 6, 6, 0]} fill="#0ea5e9" />
                     </BarChart>
                   </ResponsiveContainer>
-                </div>
+              </div>
               </ChartCard>
 
               <ChartCard title="Case Status Overview" subtitle="Distribution of current case status">
@@ -797,8 +812,8 @@ export default function StatsDashboardPage() {
                         <Legend wrapperStyle={{ fontSize: 10 }} iconType="circle" />
                       </PieChart>
                     </ResponsiveContainer>
-                  )}
-                </div>
+            )}
+          </div>
               </ChartCard>
 
               <ChartCard title="IO Assignment" subtitle="Cases with investigating officer">
@@ -814,7 +829,7 @@ export default function StatsDashboardPage() {
                       <Legend wrapperStyle={{ fontSize: 10 }} iconType="circle" />
                     </PieChart>
                   </ResponsiveContainer>
-                </div>
+        </div>
               </ChartCard>
 
               <ChartCard title="Workload Radar" subtitle="Key operational metrics">
@@ -957,7 +972,7 @@ export default function StatsDashboardPage() {
                     ))}
                   </div>
                 </div>
-                <div className="overflow-x-auto">
+              <div className="overflow-x-auto">
                   <table className="min-w-full text-sm">
                     <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                       <tr>
@@ -968,14 +983,14 @@ export default function StatsDashboardPage() {
                         <th className="px-4 py-3 font-medium">I.O.</th>
                         <th className="px-4 py-3 font-medium">Days</th>
                         <th className="px-4 py-3 text-right font-medium">Action</th>
-                      </tr>
-                    </thead>
+                    </tr>
+                  </thead>
                     <tbody className="divide-y divide-slate-100">
                       {recentRows.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="px-4 py-10 text-center text-slate-400">
                             No cases in this view
-                          </td>
+                        </td>
                         </tr>
                       ) : (
                         recentRows.map((row) => {
@@ -988,21 +1003,21 @@ export default function StatsDashboardPage() {
                               <td className="whitespace-nowrap px-4 py-3">
                                 <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${statusBadge(row.caseStatus)}`}>
                                   {row.caseStatus}
-                                </span>
-                              </td>
+                          </span>
+                        </td>
                               <td className="whitespace-nowrap px-4 py-3 text-slate-600">{row.investigatingOfficer || "—"}</td>
                               <td className="px-4 py-3 tabular-nums text-slate-600">{elapsed ?? "—"}</td>
                               <td className="px-4 py-3 text-right">
                                 <Link href={`/cases/${row._id}`} className="inline-flex rounded-lg p-1.5 text-blue-700 hover:bg-blue-50" title="View">
                                   <HiOutlineEye className="h-4 w-4" />
                                 </Link>
-                              </td>
-                            </tr>
+                        </td>
+                      </tr>
                           );
                         })
                       )}
-                    </tbody>
-                  </table>
+                  </tbody>
+                </table>
                 </div>
                 <div className="border-t border-slate-100 px-5 py-3 text-right">
                   <Link href="/manage" className="text-sm font-medium text-blue-700 hover:underline">
@@ -1034,8 +1049,8 @@ export default function StatsDashboardPage() {
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
+        </div>
+      </div>
         )}
       </AppShell>
     </AuthGuard>
