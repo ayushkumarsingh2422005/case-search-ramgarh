@@ -1438,243 +1438,313 @@ export default function Home() {
       <AppShell title="Search Cases" subtitle="Find and filter cases across Ramgarh">
         {/* Search Card */}
         <div className="prism-card overflow-hidden">
-            <div className="px-4 py-4 md:px-6 md:py-5 border-b border-slate-100 bg-gradient-to-r from-blue-50/80 to-white">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-blue-600 text-white grid place-content-center shadow-lg shadow-blue-600/20">
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          <div className="px-4 py-4 md:px-6 md:py-5 border-b border-slate-100 bg-gradient-to-r from-blue-50/80 to-white">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-blue-600 text-white grid place-content-center shadow-lg shadow-blue-600/20">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+              </div>
+              <div>
+                <h2 className="text-base md:text-lg font-semibold tracking-wide text-slate-900">Search Cases</h2>
+                <p className="text-xs md:text-sm text-slate-600">Use filters to quickly locate a case</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 py-4 md:px-6 md:py-6 space-y-6">
+            {/* Case Identification */}
+            <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+              <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
+                </svg>
+                Case Identification
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Number</label>
+                  <input value={filters.caseNo} onChange={(e) => setFilters({ ...filters, caseNo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="e.g., 77/2024" />
                 </div>
                 <div>
-                  <h2 className="text-base md:text-lg font-semibold tracking-wide text-slate-900">Search Cases</h2>
-                  <p className="text-xs md:text-sm text-slate-600">Use filters to quickly locate a case</p>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Police Station</label>
+                  <input
+                    list={scopedPoliceStation ? undefined : "ps-list"}
+                    value={scopedPoliceStation || filters.policeStation}
+                    onChange={(e) => {
+                      if (scopedPoliceStation) return;
+                      setFilters({ ...filters, policeStation: e.target.value });
+                    }}
+                    disabled={Boolean(scopedPoliceStation)}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow disabled:bg-slate-100 disabled:text-slate-600"
+                    placeholder="Search station"
+                  />
+                  {!scopedPoliceStation && (
+                    <datalist id="ps-list">
+                      {POLICE_STATIONS.map((ps) => (
+                        <option key={ps} value={ps} />
+                      ))}
+                    </datalist>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Crime Head</label>
+                  <select
+                    value={filters.crimeHead}
+                    onChange={(e) => setFilters({ ...filters, crimeHead: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                  >
+                    <option value="">All Crime Heads</option>
+                    {crimeHeads.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Investigating Officer</label>
+                  <select
+                    value={filters.investigatingOfficer}
+                    onChange={(e) => setFilters({ ...filters, investigatingOfficer: e.target.value as typeof filters.investigatingOfficer })}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                  >
+                    <option value="">All</option>
+                    <option value="__none__">Not assigned</option>
+                    {investigatingOfficerNames.map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Section</label>
+                  <input value={filters.section} onChange={(e) => setFilters({ ...filters, section: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="e.g., 420 IPC" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Date From</label>
+                  <input type="date" value={filters.caseDateFrom} onChange={(e) => setFilters({ ...filters, caseDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Date To</label>
+                  <input type="date" value={filters.caseDateTo} onChange={(e) => setFilters({ ...filters, caseDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                </div>
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">SR / NSR</label>
+                  <div className="flex flex-wrap gap-4 pt-0.5">
+                    {(["SR", "NSR"] as SrNsr[]).map((value) => (
+                      <label key={value} className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.srNsr.includes(value)}
+                          onChange={(e) => {
+                            const set = new Set(filters.srNsr);
+                            if (e.target.checked) set.add(value);
+                            else set.delete(value);
+                            setFilters({ ...filters, srNsr: Array.from(set) });
+                          }}
+                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        {value}
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">Leave unchecked to include all cases. Select one or both to narrow results.</p>
                 </div>
               </div>
             </div>
 
-            <div className="px-4 py-4 md:px-6 md:py-6 space-y-6">
-              {/* Case Identification */}
-              <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
-                  </svg>
-                  Case Identification
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Number</label>
-                    <input value={filters.caseNo} onChange={(e) => setFilters({ ...filters, caseNo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="e.g., 77/2024" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Police Station</label>
-                    <input
-                      list={scopedPoliceStation ? undefined : "ps-list"}
-                      value={scopedPoliceStation || filters.policeStation}
-                      onChange={(e) => {
-                        if (scopedPoliceStation) return;
-                        setFilters({ ...filters, policeStation: e.target.value });
-                      }}
-                      disabled={Boolean(scopedPoliceStation)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow disabled:bg-slate-100 disabled:text-slate-600"
-                      placeholder="Search station"
-                    />
-                    {!scopedPoliceStation && (
-                      <datalist id="ps-list">
-                        {POLICE_STATIONS.map((ps) => (
-                          <option key={ps} value={ps} />
+            {/* Year Filters */}
+            <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+              <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                Year Filter
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Exact Year</label>
+                  <select value={filters.year} onChange={(e) => setFilters({ ...filters, year: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                    <option value="">All Years</option>
+                    {years.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Year Range</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1.5">From</label>
+                      <select value={filters.yearFrom} onChange={(e) => setFilters({ ...filters, yearFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
+                        <option value="">Any</option>
+                        {years.map((y) => (
+                          <option key={y} value={y}>{y}</option>
                         ))}
-                      </datalist>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Crime Head</label>
-                    <select
-                      value={filters.crimeHead}
-                      onChange={(e) => setFilters({ ...filters, crimeHead: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                    >
-                      <option value="">All Crime Heads</option>
-                      {crimeHeads.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Investigating Officer</label>
-                    <select
-                      value={filters.investigatingOfficer}
-                      onChange={(e) => setFilters({ ...filters, investigatingOfficer: e.target.value as typeof filters.investigatingOfficer })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                    >
-                      <option value="">All</option>
-                      <option value="__none__">Not assigned</option>
-                      {investigatingOfficerNames.map((n) => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Section</label>
-                    <input value={filters.section} onChange={(e) => setFilters({ ...filters, section: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="e.g., 420 IPC" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Date From</label>
-                    <input type="date" value={filters.caseDateFrom} onChange={(e) => setFilters({ ...filters, caseDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Date To</label>
-                    <input type="date" value={filters.caseDateTo} onChange={(e) => setFilters({ ...filters, caseDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                  </div>
-                  <div className="sm:col-span-2 lg:col-span-3">
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">SR / NSR</label>
-                    <div className="flex flex-wrap gap-4 pt-0.5">
-                      {(["SR", "NSR"] as SrNsr[]).map((value) => (
-                        <label key={value} className="inline-flex items-center gap-2 text-sm cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.srNsr.includes(value)}
-                            onChange={(e) => {
-                              const set = new Set(filters.srNsr);
-                              if (e.target.checked) set.add(value);
-                              else set.delete(value);
-                              setFilters({ ...filters, srNsr: Array.from(set) });
-                            }}
-                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          {value}
-                        </label>
-                      ))}
+                      </select>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">Leave unchecked to include all cases. Select one or both to narrow results.</p>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1.5">To</label>
+                      <select value={filters.yearTo} onChange={(e) => setFilters({ ...filters, yearTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
+                        <option value="">Any</option>
+                        {years.map((y) => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Year Filters */}
-              <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                  Year Filter
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Exact Year</label>
-                    <select value={filters.year} onChange={(e) => setFilters({ ...filters, year: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                      <option value="">All Years</option>
-                      {years.map((y) => (
-                        <option key={y} value={y}>{y}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="sm:col-span-2 lg:col-span-1">
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Year Range</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs text-slate-500 mb-1.5">From</label>
-                        <select value={filters.yearFrom} onChange={(e) => setFilters({ ...filters, yearFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
-                          <option value="">Any</option>
-                          {years.map((y) => (
-                            <option key={y} value={y}>{y}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs text-slate-500 mb-1.5">To</label>
-                        <select value={filters.yearTo} onChange={(e) => setFilters({ ...filters, yearTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
-                          <option value="">Any</option>
-                          {years.map((y) => (
-                            <option key={y} value={y}>{y}</option>
-                          ))}
-                        </select>
-                      </div>
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Year Comparison</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1.5">Before</label>
+                      <select value={filters.yearBefore} onChange={(e) => setFilters({ ...filters, yearBefore: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
+                        <option value="">Any</option>
+                        {years.map((y) => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
                     </div>
-                  </div>
-                  <div className="sm:col-span-2 lg:col-span-1">
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Year Comparison</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs text-slate-500 mb-1.5">Before</label>
-                        <select value={filters.yearBefore} onChange={(e) => setFilters({ ...filters, yearBefore: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
-                          <option value="">Any</option>
-                          {years.map((y) => (
-                            <option key={y} value={y}>{y}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs text-slate-500 mb-1.5">After</label>
-                        <select value={filters.yearAfter} onChange={(e) => setFilters({ ...filters, yearAfter: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
-                          <option value="">Any</option>
-                          {years.map((y) => (
-                            <option key={y} value={y}>{y}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1.5">After</label>
+                      <select value={filters.yearAfter} onChange={(e) => setFilters({ ...filters, yearAfter: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm">
+                        <option value="">Any</option>
+                        {years.map((y) => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Case Details */}
-              <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                    <polyline points="10 9 9 9 8 9" />
-                  </svg>
-                  Case Details
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Punishment Range</label>
-                    <div className="flex gap-4 pt-2">
-                      <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+            {/* Case Details */}
+            <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+              <h3 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <polyline points="10 9 9 9 8 9" />
+                </svg>
+                Case Details
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Punishment Range</label>
+                  <div className="flex gap-4 pt-2">
+                    <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={filters.punishment.includes("\u22647")}
+                        onChange={(e) => {
+                          const set = new Set(filters.punishment);
+                          if (e.target.checked) set.add("\u22647"); else set.delete("\u22647");
+                          setFilters({ ...filters, punishment: Array.from(set) as Array<"\u22647" | ">7"> });
+                        }}
+                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      ≤7 Years
+                    </label>
+                    <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={filters.punishment.includes(">7")}
+                        onChange={(e) => {
+                          const set = new Set(filters.punishment);
+                          if (e.target.checked) set.add(">7"); else set.delete(">7");
+                          setFilters({ ...filters, punishment: Array.from(set) as Array<"\u22647" | ">7"> });
+                        }}
+                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      {">7 Years"}
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Status</label>
+                  <div className="flex flex-col gap-2 pt-2">
+                    {(["Disposed", "Under investigation"] as CaseStatus[]).map((status) => (
+                      <label key={status} className="inline-flex items-center gap-2 text-sm cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={filters.punishment.includes("\u22647")}
+                          checked={filters.caseStatus.includes(status)}
                           onChange={(e) => {
-                            const set = new Set(filters.punishment);
-                            if (e.target.checked) set.add("\u22647"); else set.delete("\u22647");
-                            setFilters({ ...filters, punishment: Array.from(set) as Array<"\u22647" | ">7"> });
+                            const set = new Set(filters.caseStatus);
+                            if (e.target.checked) set.add(status); else set.delete(status);
+                            setFilters({ ...filters, caseStatus: Array.from(set) });
                           }}
                           className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                         />
-                        ≤7 Years
+                        {status}
                       </label>
-                      <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={filters.punishment.includes(">7")}
-                          onChange={(e) => {
-                            const set = new Set(filters.punishment);
-                            if (e.target.checked) set.add(">7"); else set.delete(">7");
-                            setFilters({ ...filters, punishment: Array.from(set) as Array<"\u22647" | ">7"> });
-                          }}
-                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        {">7 Years"}
-                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Decision Status</label>
+                  <select
+                    value={filters.caseDecisionStatus}
+                    onChange={(e) =>
+                      setFilters({ ...filters, caseDecisionStatus: e.target.value as "" | "True" | "False" | "Partial Pendency" | "Complete Pendency" })
+                    }
+                    className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                  >
+                    <option value="">All statuses</option>
+                    <option value="True">True</option>
+                    <option value="False">False</option>
+                    <option value="Partial Pendency">Partial Pendency</option>
+                    <option value="Complete Pendency">Complete Pendency</option>
+                  </select>
+                </div>
+
+                {/* Chargesheet Filters */}
+                <div className="sm:col-span-2 lg:col-span-3 border-t border-slate-200 pt-4 mt-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-3">Chargesheet Deadline Filters</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1.5">Deadline Type</label>
+                      <select
+                        value={filters.chargesheetDeadlineType}
+                        onChange={(e) => setFilters({ ...filters, chargesheetDeadlineType: e.target.value as any })}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm"
+                      >
+                        <option value="">All Types</option>
+                        <option value="60">60 Days</option>
+                        <option value="90">90 Days</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1.5">Status</label>
+                      <select
+                        value={filters.chargesheetStatus}
+                        onChange={(e) => setFilters({ ...filters, chargesheetStatus: e.target.value as any })}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm"
+                      >
+                        <option value="">All Statuses</option>
+                        <option value="Overdue">Overdue</option>
+                        <option value="Pending">Pending</option>
+                      </select>
                     </div>
                   </div>
+                </div>
+
+                {filters.caseStatus.includes("Under investigation") && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Status</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Investigation Status</label>
                     <div className="flex flex-col gap-2 pt-2">
-                      {(["Disposed", "Under investigation"] as CaseStatus[]).map((status) => (
+                      {(["Detected", "Undetected"] as InvestigationStatus[]).map((status) => (
                         <label key={status} className="inline-flex items-center gap-2 text-sm cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={filters.caseStatus.includes(status)}
+                            checked={filters.investigationStatus.includes(status)}
                             onChange={(e) => {
-                              const set = new Set(filters.caseStatus);
+                              const set = new Set(filters.investigationStatus);
                               if (e.target.checked) set.add(status); else set.delete(status);
-                              setFilters({ ...filters, caseStatus: Array.from(set) });
+                              setFilters({ ...filters, investigationStatus: Array.from(set) });
                             }}
                             className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                           />
@@ -1683,1174 +1753,1104 @@ export default function Home() {
                       ))}
                     </div>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Case Decision Status</label>
-                    <select
-                      value={filters.caseDecisionStatus}
-                      onChange={(e) =>
-                        setFilters({ ...filters, caseDecisionStatus: e.target.value as "" | "True" | "False" | "Partial Pendency" | "Complete Pendency" })
-                      }
-                      className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
-                    >
-                      <option value="">All statuses</option>
-                      <option value="True">True</option>
-                      <option value="False">False</option>
-                      <option value="Partial Pendency">Partial Pendency</option>
-                      <option value="Complete Pendency">Complete Pendency</option>
-                    </select>
-                  </div>
-
-                  {/* Chargesheet Filters */}
-                  <div className="sm:col-span-2 lg:col-span-3 border-t border-slate-200 pt-4 mt-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-3">Chargesheet Deadline Filters</label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-xs text-slate-500 mb-1.5">Deadline Type</label>
-                        <select
-                          value={filters.chargesheetDeadlineType}
-                          onChange={(e) => setFilters({ ...filters, chargesheetDeadlineType: e.target.value as any })}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm"
-                        >
-                          <option value="">All Types</option>
-                          <option value="60">60 Days</option>
-                          <option value="90">90 Days</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs text-slate-500 mb-1.5">Status</label>
-                        <select
-                          value={filters.chargesheetStatus}
-                          onChange={(e) => setFilters({ ...filters, chargesheetStatus: e.target.value as any })}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm"
-                        >
-                          <option value="">All Statuses</option>
-                          <option value="Overdue">Overdue</option>
-                          <option value="Pending">Pending</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  {filters.caseStatus.includes("Under investigation") && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">Investigation Status</label>
-                      <div className="flex flex-col gap-2 pt-2">
-                        {(["Detected", "Undetected"] as InvestigationStatus[]).map((status) => (
-                          <label key={status} className="inline-flex items-center gap-2 text-sm cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={filters.investigationStatus.includes(status)}
-                              onChange={(e) => {
-                                const set = new Set(filters.investigationStatus);
-                                if (e.target.checked) set.add(status); else set.delete(status);
-                                setFilters({ ...filters, investigationStatus: Array.from(set) });
-                              }}
-                              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            {status}
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Priority</label>
-                    <div className="flex flex-col gap-2 pt-2">
-                      {(["Under monitoring", "Normal"] as Priority[]).map((priority) => (
-                        <label key={priority} className="inline-flex items-center gap-2 text-sm cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.priority.includes(priority)}
-                            onChange={(e) => {
-                              const set = new Set(filters.priority);
-                              if (e.target.checked) set.add(priority); else set.delete(priority);
-                              setFilters({ ...filters, priority: Array.from(set) });
-                            }}
-                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          {priority}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Property/Professional Crime</label>
-                    <label className="inline-flex items-center gap-2 text-sm pt-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filters.isPropertyProfessionalCrime}
-                        onChange={(e) => setFilters({ ...filters, isPropertyProfessionalCrime: e.target.checked })}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      Identify property/professional crimes
-                    </label>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Additional Status</label>
-                    <label className="inline-flex items-center gap-2 text-sm pt-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filters.isPendingForCharge}
-                        onChange={(e) => setFilters({ ...filters, isPendingForCharge: e.target.checked })}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      Case Pending for Charge
-                    </label>
-                  </div>
-                  <div className="sm:col-span-2 lg:col-span-1">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label className="block text-sm font-medium text-slate-700">Reason for Pendency</label>
-                      <button
-                        type="button"
-                        onClick={() => setShowAddReasonModal(true)}
-                        className="text-xs text-blue-700 hover:text-blue-800 font-medium hover:underline"
-                        title="Add new reason (Admin)"
-                      >
-                        + Add
-                      </button>
-                    </div>
-                    {reasonForPendencyOptions.length === 0 ? (
-                      <p className="text-sm text-slate-500 py-2">Loading options...</p>
-                    ) : (
-                      <>
-                        <select
-                          multiple
-                          value={filters.reasonForPendency}
+                )}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Priority</label>
+                  <div className="flex flex-col gap-2 pt-2">
+                    {(["Under monitoring", "Normal"] as Priority[]).map((priority) => (
+                      <label key={priority} className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.priority.includes(priority)}
                           onChange={(e) => {
-                            const selected = Array.from(e.target.selectedOptions, option => option.value);
-                            setFilters({ ...filters, reasonForPendency: selected });
+                            const set = new Set(filters.priority);
+                            if (e.target.checked) set.add(priority); else set.delete(priority);
+                            setFilters({ ...filters, priority: Array.from(set) });
                           }}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                          size={4}
-                        >
-                          {reasonForPendencyOptions.map((reason) => (
-                            <option key={reason} value={reason}>{reason}</option>
-                          ))}
-                        </select>
-                        <p className="text-xs text-slate-500 mt-1.5">Hold Ctrl/Cmd to select multiple</p>
-                      </>
-                    )}
+                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        {priority}
+                      </label>
+                    ))}
                   </div>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Property/Professional Crime</label>
+                  <label className="inline-flex items-center gap-2 text-sm pt-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={filters.isPropertyProfessionalCrime}
+                      onChange={(e) => setFilters({ ...filters, isPropertyProfessionalCrime: e.target.checked })}
+                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    Identify property/organized crime
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Additional Status</label>
+                  <label className="inline-flex items-center gap-2 text-sm pt-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={filters.isPendingForCharge}
+                      onChange={(e) => setFilters({ ...filters, isPendingForCharge: e.target.checked })}
+                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    Case Pending for Charge
+                  </label>
+                </div>
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Reason for Pendency</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddReasonModal(true)}
+                      className="text-xs text-blue-700 hover:text-blue-800 font-medium hover:underline"
+                      title="Add new reason (Admin)"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  {reasonForPendencyOptions.length === 0 ? (
+                    <p className="text-sm text-slate-500 py-2">Loading options...</p>
+                  ) : (
+                    <>
+                      <select
+                        multiple
+                        value={filters.reasonForPendency}
+                        onChange={(e) => {
+                          const selected = Array.from(e.target.selectedOptions, option => option.value);
+                          setFilters({ ...filters, reasonForPendency: selected });
+                        }}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                        size={4}
+                      >
+                        {reasonForPendencyOptions.map((reason) => (
+                          <option key={reason} value={reason}>{reason}</option>
+                        ))}
+                      </select>
+                      <p className="text-xs text-slate-500 mt-1.5">Hold Ctrl/Cmd to select multiple</p>
+                    </>
+                  )}
+                </div>
               </div>
+            </div>
 
-              {/* Accused Filters */}
-              <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => toggleSection('accused')}
-                  className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
-                >
-                  <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                    <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                    Accused Information
-                  </h3>
-                  <svg
-                    className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.accused ? 'rotate-180' : ''}`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <polyline points="6 9 12 15 18 9" />
+            {/* Accused Filters */}
+            <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => toggleSection('accused')}
+                className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
+              >
+                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                  <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                </button>
-                {expandedSections.accused && (
-                  <div className="px-5 pb-5 space-y-6">
-                    {/* Basic Accused Information */}
-                    <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Basic Information</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Accused Name</label>
-                          <input value={filters.accusedName} onChange={(e) => setFilters({ ...filters, accusedName: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter name" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Accused Status</label>
-                          <select value={filters.accusedStatus} onChange={(e) => setFilters({ ...filters, accusedStatus: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                            <option value="">All Status</option>
-                            <option>Arrested</option>
-                            <option>Not arrested</option>
-                            <option>Decision pending</option>
-                            <option>Pending Verification</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Address</label>
-                          <input value={filters.accusedAddress} onChange={(e) => setFilters({ ...filters, accusedAddress: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter address" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Mobile Number</label>
-                          <input value={filters.accusedMobileNumber} onChange={(e) => setFilters({ ...filters, accusedMobileNumber: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter mobile number" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Aadhaar Number</label>
-                          <input value={filters.accusedAadhaarNumber} onChange={(e) => setFilters({ ...filters, accusedAadhaarNumber: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter Aadhaar number" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">State</label>
-                          <select value={filters.accusedState} onChange={(e) => setFilters({ ...filters, accusedState: e.target.value, accusedDistrict: "" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                            <option value="">All States</option>
-                            {INDIAN_STATES.map((state) => (
-                              <option key={state} value={state}>{state}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">District</label>
-                          <select value={filters.accusedDistrict} onChange={(e) => setFilters({ ...filters, accusedDistrict: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" disabled={!filters.accusedState}>
-                            <option value="">All Districts</option>
-                            {filters.accusedState && DISTRICTS_BY_STATE[filters.accusedState]?.map((district) => (
-                              <option key={district} value={district}>{district}</option>
-                            ))}
-                          </select>
-                        </div>
+                  Accused Information
+                </h3>
+                <svg
+                  className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.accused ? 'rotate-180' : ''}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {expandedSections.accused && (
+                <div className="px-5 pb-5 space-y-6">
+                  {/* Basic Accused Information */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Basic Information</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Accused Name</label>
+                        <input value={filters.accusedName} onChange={(e) => setFilters({ ...filters, accusedName: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter name" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Accused Status</label>
+                        <select value={filters.accusedStatus} onChange={(e) => setFilters({ ...filters, accusedStatus: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                          <option value="">All Status</option>
+                          <option>Arrested</option>
+                          <option>Not arrested</option>
+                          <option>Decision pending</option>
+                          <option>Pending Verification</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Address</label>
+                        <input value={filters.accusedAddress} onChange={(e) => setFilters({ ...filters, accusedAddress: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter address" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Mobile Number</label>
+                        <input value={filters.accusedMobileNumber} onChange={(e) => setFilters({ ...filters, accusedMobileNumber: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter mobile number" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Aadhaar Number</label>
+                        <input value={filters.accusedAadhaarNumber} onChange={(e) => setFilters({ ...filters, accusedAadhaarNumber: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" placeholder="Enter Aadhaar number" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">State</label>
+                        <select value={filters.accusedState} onChange={(e) => setFilters({ ...filters, accusedState: e.target.value, accusedDistrict: "" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                          <option value="">All States</option>
+                          {INDIAN_STATES.map((state) => (
+                            <option key={state} value={state}>{state}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">District</label>
+                        <select value={filters.accusedDistrict} onChange={(e) => setFilters({ ...filters, accusedDistrict: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" disabled={!filters.accusedState}>
+                          <option value="">All Districts</option>
+                          {filters.accusedState && DISTRICTS_BY_STATE[filters.accusedState]?.map((district) => (
+                            <option key={district} value={district}>{district}</option>
+                          ))}
+                        </select>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Accused Counts */}
-                    <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Accused Counts</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Total Accused Count</label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <label className="block text-xs text-slate-500 mb-1.5">Min</label>
-                              <input type="number" min="0" value={filters.accusedCountMin} onChange={(e) => setFilters({ ...filters, accusedCountMin: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Min" />
-                            </div>
-                            <div>
-                              <label className="block text-xs text-slate-500 mb-1.5">Max</label>
-                              <input type="number" min="0" value={filters.accusedCountMax} onChange={(e) => setFilters({ ...filters, accusedCountMax: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Max" />
-                            </div>
+                  {/* Accused Counts */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Accused Counts</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Total Accused Count</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs text-slate-500 mb-1.5">Min</label>
+                            <input type="number" min="0" value={filters.accusedCountMin} onChange={(e) => setFilters({ ...filters, accusedCountMin: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Min" />
                           </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Arrested Count</label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <label className="block text-xs text-slate-500 mb-1.5">Min</label>
-                              <input type="number" min="0" value={filters.arrestedCountMin} onChange={(e) => setFilters({ ...filters, arrestedCountMin: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Min" />
-                            </div>
-                            <div>
-                              <label className="block text-xs text-slate-500 mb-1.5">Max</label>
-                              <input type="number" min="0" value={filters.arrestedCountMax} onChange={(e) => setFilters({ ...filters, arrestedCountMax: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Max" />
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Unarrested Count</label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <label className="block text-xs text-slate-500 mb-1.5">Min</label>
-                              <input type="number" min="0" value={filters.unarrestedCountMin} onChange={(e) => setFilters({ ...filters, unarrestedCountMin: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Min" />
-                            </div>
-                            <div>
-                              <label className="block text-xs text-slate-500 mb-1.5">Max</label>
-                              <input type="number" min="0" value={filters.unarrestedCountMax} onChange={(e) => setFilters({ ...filters, unarrestedCountMax: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Max" />
-                            </div>
+                          <div>
+                            <label className="block text-xs text-slate-500 mb-1.5">Max</label>
+                            <input type="number" min="0" value={filters.accusedCountMax} onChange={(e) => setFilters({ ...filters, accusedCountMax: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Max" />
                           </div>
                         </div>
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Arrested Count</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs text-slate-500 mb-1.5">Min</label>
+                            <input type="number" min="0" value={filters.arrestedCountMin} onChange={(e) => setFilters({ ...filters, arrestedCountMin: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Min" />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-slate-500 mb-1.5">Max</label>
+                            <input type="number" min="0" value={filters.arrestedCountMax} onChange={(e) => setFilters({ ...filters, arrestedCountMax: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Max" />
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Unarrested Count</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs text-slate-500 mb-1.5">Min</label>
+                            <input type="number" min="0" value={filters.unarrestedCountMin} onChange={(e) => setFilters({ ...filters, unarrestedCountMin: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Min" />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-slate-500 mb-1.5">Max</label>
+                            <input type="number" min="0" value={filters.unarrestedCountMax} onChange={(e) => setFilters({ ...filters, unarrestedCountMax: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" placeholder="Max" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                  </div>
 
-                    {/* Notice 41A */}
-                    <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Notice 41A</h4>
+                  {/* Notice 41A */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Notice 41A</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="flex items-center">
+                        <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={filters.notice41AIssued}
+                            onChange={(e) => setFilters({ ...filters, notice41AIssued: e.target.checked })}
+                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          Notice 41A Issued
+                        </label>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Notice Date From</label>
+                        <input type="date" value={filters.notice41ADateFrom} onChange={(e) => setFilters({ ...filters, notice41ADateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Notice Date To</label>
+                        <input type="date" value={filters.notice41ADateTo} onChange={(e) => setFilters({ ...filters, notice41ADateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Warrant */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Warrant</h4>
+                    <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Warrant Prayed</label>
+                          <select value={filters.warrantPrayed} onChange={(e) => setFilters({ ...filters, warrantPrayed: e.target.value as "" | "Yes" | "No" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
                         <div className="flex items-center">
                           <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={filters.notice41AIssued}
-                              onChange={(e) => setFilters({ ...filters, notice41AIssued: e.target.checked })}
+                              checked={filters.warrantReceivedButNotExecuted}
+                              onChange={(e) => setFilters({ ...filters, warrantReceivedButNotExecuted: e.target.checked })}
                               className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                             />
-                            Notice 41A Issued
+                            Warrant Received but Not Executed
                           </label>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Notice Date From</label>
-                          <input type="date" value={filters.notice41ADateFrom} onChange={(e) => setFilters({ ...filters, notice41ADateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                          <TimeAgoFilter
+                            value={filters.warrantIssuedMonthsAgo}
+                            onChange={(val) => setFilters({ ...filters, warrantIssuedMonthsAgo: val })}
+                            label="Warrant Issued More Than"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date From</label>
+                          <input type="date" value={filters.warrantPrayerDateFrom} onChange={(e) => setFilters({ ...filters, warrantPrayerDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Notice Date To</label>
-                          <input type="date" value={filters.notice41ADateTo} onChange={(e) => setFilters({ ...filters, notice41ADateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date To</label>
+                          <input type="date" value={filters.warrantPrayerDateTo} onChange={(e) => setFilters({ ...filters, warrantPrayerDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Warrant */}
-                    <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Warrant</h4>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Warrant Prayed</label>
-                            <select value={filters.warrantPrayed} onChange={(e) => setFilters({ ...filters, warrantPrayed: e.target.value as "" | "Yes" | "No" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div className="flex items-center">
-                            <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.warrantReceivedButNotExecuted}
-                                onChange={(e) => setFilters({ ...filters, warrantReceivedButNotExecuted: e.target.checked })}
-                                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                              />
-                              Warrant Received but Not Executed
-                            </label>
-                          </div>
-                          <div>
-                            <TimeAgoFilter
-                              value={filters.warrantIssuedMonthsAgo}
-                              onChange={(val) => setFilters({ ...filters, warrantIssuedMonthsAgo: val })}
-                              label="Warrant Issued More Than"
-                            />
-                          </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date From</label>
+                          <input type="date" value={filters.warrantReceiptDateFrom} onChange={(e) => setFilters({ ...filters, warrantReceiptDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date From</label>
-                            <input type="date" value={filters.warrantPrayerDateFrom} onChange={(e) => setFilters({ ...filters, warrantPrayerDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date To</label>
-                            <input type="date" value={filters.warrantPrayerDateTo} onChange={(e) => setFilters({ ...filters, warrantPrayerDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date From</label>
-                            <input type="date" value={filters.warrantReceiptDateFrom} onChange={(e) => setFilters({ ...filters, warrantReceiptDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date To</label>
-                            <input type="date" value={filters.warrantReceiptDateTo} onChange={(e) => setFilters({ ...filters, warrantReceiptDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date From</label>
-                            <input type="date" value={filters.warrantExecutionDateFrom} onChange={(e) => setFilters({ ...filters, warrantExecutionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date To</label>
-                            <input type="date" value={filters.warrantExecutionDateTo} onChange={(e) => setFilters({ ...filters, warrantExecutionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date To</label>
+                          <input type="date" value={filters.warrantReceiptDateTo} onChange={(e) => setFilters({ ...filters, warrantReceiptDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Proclamation */}
-                    <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Proclamation</h4>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Proclamation Prayed</label>
-                            <select value={filters.proclamationPrayed} onChange={(e) => setFilters({ ...filters, proclamationPrayed: e.target.value as "" | "Yes" | "No" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div className="flex items-center">
-                            <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.proclamationReceivedButNotExecuted}
-                                onChange={(e) => setFilters({ ...filters, proclamationReceivedButNotExecuted: e.target.checked })}
-                                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                              />
-                              Proclamation Received but Not Executed
-                            </label>
-                          </div>
-                          <div>
-                            <TimeAgoFilter
-                              value={filters.proclamationIssuedMonthsAgo}
-                              onChange={(val) => setFilters({ ...filters, proclamationIssuedMonthsAgo: val })}
-                              label="Proclamation Issued More Than"
-                            />
-                          </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date From</label>
+                          <input type="date" value={filters.warrantExecutionDateFrom} onChange={(e) => setFilters({ ...filters, warrantExecutionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date From</label>
-                            <input type="date" value={filters.proclamationPrayerDateFrom} onChange={(e) => setFilters({ ...filters, proclamationPrayerDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date To</label>
-                            <input type="date" value={filters.proclamationPrayerDateTo} onChange={(e) => setFilters({ ...filters, proclamationPrayerDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date From</label>
-                            <input type="date" value={filters.proclamationReceiptDateFrom} onChange={(e) => setFilters({ ...filters, proclamationReceiptDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date To</label>
-                            <input type="date" value={filters.proclamationReceiptDateTo} onChange={(e) => setFilters({ ...filters, proclamationReceiptDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date From</label>
-                            <input type="date" value={filters.proclamationExecutionDateFrom} onChange={(e) => setFilters({ ...filters, proclamationExecutionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date To</label>
-                            <input type="date" value={filters.proclamationExecutionDateTo} onChange={(e) => setFilters({ ...filters, proclamationExecutionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Attachment */}
-                    <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Attachment</h4>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Attachment Prayed</label>
-                            <select value={filters.attachmentPrayed} onChange={(e) => setFilters({ ...filters, attachmentPrayed: e.target.value as "" | "Yes" | "No" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div className="flex items-center">
-                            <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.attachmentReceivedButNotExecuted}
-                                onChange={(e) => setFilters({ ...filters, attachmentReceivedButNotExecuted: e.target.checked })}
-                                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                              />
-                              Attachment Received but Not Executed
-                            </label>
-                          </div>
-                          <div>
-                            <TimeAgoFilter
-                              value={filters.attachmentIssuedMonthsAgo}
-                              onChange={(val) => setFilters({ ...filters, attachmentIssuedMonthsAgo: val })}
-                              label="Attachment Issued More Than"
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date From</label>
-                            <input type="date" value={filters.attachmentPrayerDateFrom} onChange={(e) => setFilters({ ...filters, attachmentPrayerDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date To</label>
-                            <input type="date" value={filters.attachmentPrayerDateTo} onChange={(e) => setFilters({ ...filters, attachmentPrayerDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date From</label>
-                            <input type="date" value={filters.attachmentReceiptDateFrom} onChange={(e) => setFilters({ ...filters, attachmentReceiptDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date To</label>
-                            <input type="date" value={filters.attachmentReceiptDateTo} onChange={(e) => setFilters({ ...filters, attachmentReceiptDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date From</label>
-                            <input type="date" value={filters.attachmentExecutionDateFrom} onChange={(e) => setFilters({ ...filters, attachmentExecutionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date To</label>
-                            <input type="date" value={filters.attachmentExecutionDateTo} onChange={(e) => setFilters({ ...filters, attachmentExecutionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
-                          </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date To</label>
+                          <input type="date" value={filters.warrantExecutionDateTo} onChange={(e) => setFilters({ ...filters, warrantExecutionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Proclamation */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Proclamation</h4>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Proclamation Prayed</label>
+                          <select value={filters.proclamationPrayed} onChange={(e) => setFilters({ ...filters, proclamationPrayed: e.target.value as "" | "Yes" | "No" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center">
+                          <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.proclamationReceivedButNotExecuted}
+                              onChange={(e) => setFilters({ ...filters, proclamationReceivedButNotExecuted: e.target.checked })}
+                              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            Proclamation Received but Not Executed
+                          </label>
+                        </div>
+                        <div>
+                          <TimeAgoFilter
+                            value={filters.proclamationIssuedMonthsAgo}
+                            onChange={(val) => setFilters({ ...filters, proclamationIssuedMonthsAgo: val })}
+                            label="Proclamation Issued More Than"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date From</label>
+                          <input type="date" value={filters.proclamationPrayerDateFrom} onChange={(e) => setFilters({ ...filters, proclamationPrayerDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date To</label>
+                          <input type="date" value={filters.proclamationPrayerDateTo} onChange={(e) => setFilters({ ...filters, proclamationPrayerDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date From</label>
+                          <input type="date" value={filters.proclamationReceiptDateFrom} onChange={(e) => setFilters({ ...filters, proclamationReceiptDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date To</label>
+                          <input type="date" value={filters.proclamationReceiptDateTo} onChange={(e) => setFilters({ ...filters, proclamationReceiptDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date From</label>
+                          <input type="date" value={filters.proclamationExecutionDateFrom} onChange={(e) => setFilters({ ...filters, proclamationExecutionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date To</label>
+                          <input type="date" value={filters.proclamationExecutionDateTo} onChange={(e) => setFilters({ ...filters, proclamationExecutionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Attachment */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-3">Attachment</h4>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Attachment Prayed</label>
+                          <select value={filters.attachmentPrayed} onChange={(e) => setFilters({ ...filters, attachmentPrayed: e.target.value as "" | "Yes" | "No" })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center">
+                          <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.attachmentReceivedButNotExecuted}
+                              onChange={(e) => setFilters({ ...filters, attachmentReceivedButNotExecuted: e.target.checked })}
+                              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            Attachment Received but Not Executed
+                          </label>
+                        </div>
+                        <div>
+                          <TimeAgoFilter
+                            value={filters.attachmentIssuedMonthsAgo}
+                            onChange={(val) => setFilters({ ...filters, attachmentIssuedMonthsAgo: val })}
+                            label="Attachment Issued More Than"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date From</label>
+                          <input type="date" value={filters.attachmentPrayerDateFrom} onChange={(e) => setFilters({ ...filters, attachmentPrayerDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Prayer Date To</label>
+                          <input type="date" value={filters.attachmentPrayerDateTo} onChange={(e) => setFilters({ ...filters, attachmentPrayerDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date From</label>
+                          <input type="date" value={filters.attachmentReceiptDateFrom} onChange={(e) => setFilters({ ...filters, attachmentReceiptDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Receipt Date To</label>
+                          <input type="date" value={filters.attachmentReceiptDateTo} onChange={(e) => setFilters({ ...filters, attachmentReceiptDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date From</label>
+                          <input type="date" value={filters.attachmentExecutionDateFrom} onChange={(e) => setFilters({ ...filters, attachmentExecutionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1.5">Execution Date To</label>
+                          <input type="date" value={filters.attachmentExecutionDateTo} onChange={(e) => setFilters({ ...filters, attachmentExecutionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow text-sm" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Advanced Filters Toggle */}
+            <div className="flex items-center justify-between py-2">
+              <div className="flex-1 border-t border-slate-200"></div>
+              <button
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                className="mx-4 px-4 py-2 text-sm font-medium text-blue-700 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                {showAdvancedFilters ? (
+                  <>
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="18 15 12 9 6 15" /></svg>
+                    Hide Advanced Filters
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                    Show Advanced Filters
+                  </>
                 )}
-              </div>
+              </button>
+              <div className="flex-1 border-t border-slate-200"></div>
+            </div>
 
-              {/* Advanced Filters Toggle */}
-              <div className="flex items-center justify-between py-2">
-                <div className="flex-1 border-t border-slate-200"></div>
-                <button
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  className="mx-4 px-4 py-2 text-sm font-medium text-blue-700 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
-                >
-                  {showAdvancedFilters ? (
-                    <>
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="18 15 12 9 6 15" /></svg>
-                      Hide Advanced Filters
-                    </>
-                  ) : (
-                    <>
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
-                      Show Advanced Filters
-                    </>
-                  )}
-                </button>
-                <div className="flex-1 border-t border-slate-200"></div>
-              </div>
-
-              {/* Advanced Filters */}
-              {showAdvancedFilters && (
-                <div className="space-y-6">
-                  {/* Date Filters */}
-                  {/* Case Diary Section */}
-                  <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => toggleSection('diary')}
-                      className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
-                    >
-                      <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                        <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14 2 14 8 20 8" />
-                          <line x1="16" y1="13" x2="8" y2="13" />
-                          <line x1="16" y1="17" x2="8" y2="17" />
-                          <polyline points="10 9 9 9 8 9" />
-                        </svg>
-                        Case Diary
-                      </h3>
-                      <svg
-                        className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.diary ? 'rotate-180' : ''}`}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
+            {/* Advanced Filters */}
+            {showAdvancedFilters && (
+              <div className="space-y-6">
+                {/* Date Filters */}
+                {/* Case Diary Section */}
+                <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleSection('diary')}
+                    className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
+                  >
+                    <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
                       </svg>
-                    </button>
-                    {expandedSections.diary && (
-                      <div className="px-5 pb-5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      Case Diary
+                    </h3>
+                    <svg
+                      className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.diary ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  {expandedSections.diary && (
+                    <div className="px-5 pb-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Diary Number</label>
+                          <input
+                            type="text"
+                            value={filters.diaryNo}
+                            onChange={(e) => setFilters({ ...filters, diaryNo: e.target.value })}
+                            placeholder="Enter diary number"
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Diary Date From</label>
+                          <input
+                            type="date"
+                            value={filters.diaryDateFrom}
+                            onChange={(e) => setFilters({ ...filters, diaryDateFrom: e.target.value })}
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Diary Date To</label>
+                          <input
+                            type="date"
+                            value={filters.diaryDateTo}
+                            onChange={(e) => setFilters({ ...filters, diaryDateTo: e.target.value })}
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Not Updated For (Days)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={filters.diaryNotUpdatedDays}
+                            onChange={(e) => setFilters({ ...filters, diaryNotUpdatedDays: e.target.value })}
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                            placeholder="Enter days"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Date Filters */}
+                <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleSection('dates')}
+                    className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
+                  >
+                    <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                      </svg>
+                      Date Filters
+                    </h3>
+                    <svg
+                      className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.dates ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  {expandedSections.dates && (
+                    <div className="px-5 pb-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Arrest Date From</label>
+                          <input type="date" value={filters.arrestDateFrom} onChange={(e) => setFilters({ ...filters, arrestDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Arrest Date To</label>
+                          <input type="date" value={filters.arrestDateTo} onChange={(e) => setFilters({ ...filters, arrestDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Report Filters */}
+                <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleSection('reports')}
+                    className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
+                  >
+                    <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                      </svg>
+                      Report Filters
+                    </h3>
+                    <svg
+                      className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.reports ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  {expandedSections.reports && (
+                    <div className="px-5 pb-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {/* Aggregate Report Filters */}
+                        <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-blue-50/50 p-4 rounded-lg border border-blue-100">
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Diary Number</label>
-                            <input
-                              type="text"
-                              value={filters.diaryNo}
-                              onChange={(e) => setFilters({ ...filters, diaryNo: e.target.value })}
-                              placeholder="Enter diary number"
-                              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Diary Date From</label>
-                            <input
-                              type="date"
-                              value={filters.diaryDateFrom}
-                              onChange={(e) => setFilters({ ...filters, diaryDateFrom: e.target.value })}
-                              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Diary Date To</label>
-                            <input
-                              type="date"
-                              value={filters.diaryDateTo}
-                              onChange={(e) => setFilters({ ...filters, diaryDateTo: e.target.value })}
-                              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Not Updated For (Days)</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Last R Report Not Updated For (Days)</label>
                             <input
                               type="number"
                               min="0"
-                              value={filters.diaryNotUpdatedDays}
-                              onChange={(e) => setFilters({ ...filters, diaryNotUpdatedDays: e.target.value })}
+                              value={filters.reportRNotUpdatedDays}
+                              onChange={(e) => setFilters({ ...filters, reportRNotUpdatedDays: e.target.value })}
+                              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                              placeholder="Enter days"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Last PR Report Not Updated For (Days)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={filters.reportPRNotUpdatedDays}
+                              onChange={(e) => setFilters({ ...filters, reportPRNotUpdatedDays: e.target.value })}
                               className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
                               placeholder="Enter days"
                             />
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
 
-                  {/* Date Filters */}
-                  <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => toggleSection('dates')}
-                      className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
-                    >
-                      <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                        <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                          <line x1="16" y1="2" x2="16" y2="6" />
-                          <line x1="8" y1="2" x2="8" y2="6" />
-                          <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        Date Filters
-                      </h3>
-                      <svg
-                        className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.dates ? 'rotate-180' : ''}`}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </button>
-                    {expandedSections.dates && (
-                      <div className="px-5 pb-5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* R1 Report */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R1 Report</label>
+                          <select value={filters.reportR1} onChange={(e) => setFilters({ ...filters, reportR1: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R1 Date From</label>
+                          <input type="date" value={filters.reportR1DateFrom} onChange={(e) => setFilters({ ...filters, reportR1DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R1 Date To</label>
+                          <input type="date" value={filters.reportR1DateTo} onChange={(e) => setFilters({ ...filters, reportR1DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
 
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Arrest Date From</label>
-                            <input type="date" value={filters.arrestDateFrom} onChange={(e) => setFilters({ ...filters, arrestDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Arrest Date To</label>
-                            <input type="date" value={filters.arrestDateTo} onChange={(e) => setFilters({ ...filters, arrestDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
+                        {/* Supervision Report */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervision Report</label>
+                          <select value={filters.reportSupervision} onChange={(e) => setFilters({ ...filters, reportSupervision: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervision Date From</label>
+                          <input type="date" value={filters.reportSupervisionDateFrom} onChange={(e) => setFilters({ ...filters, reportSupervisionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervision Date To</label>
+                          <input type="date" value={filters.reportSupervisionDateTo} onChange={(e) => setFilters({ ...filters, reportSupervisionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+
+                        {/* R2 Report */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R2 Report</label>
+                          <select value={filters.reportR2} onChange={(e) => setFilters({ ...filters, reportR2: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R2 Date From</label>
+                          <input type="date" value={filters.reportR2DateFrom} onChange={(e) => setFilters({ ...filters, reportR2DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R2 Date To</label>
+                          <input type="date" value={filters.reportR2DateTo} onChange={(e) => setFilters({ ...filters, reportR2DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+
+                        {/* R3 Report */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R3 Report</label>
+                          <select value={filters.reportR3} onChange={(e) => setFilters({ ...filters, reportR3: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R3 Date From</label>
+                          <input type="date" value={filters.reportR3DateFrom} onChange={(e) => setFilters({ ...filters, reportR3DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">R3 Date To</label>
+                          <input type="date" value={filters.reportR3DateTo} onChange={(e) => setFilters({ ...filters, reportR3DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+
+                        {/* PR1 Report (issued by DSP) */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR1 Report (DSP)</label>
+                          <select value={filters.reportPR1} onChange={(e) => setFilters({ ...filters, reportPR1: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR1 Date From</label>
+                          <input type="date" value={filters.reportPR1DateFrom} onChange={(e) => setFilters({ ...filters, reportPR1DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR1 Date To</label>
+                          <input type="date" value={filters.reportPR1DateTo} onChange={(e) => setFilters({ ...filters, reportPR1DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+
+                        {/* PR2 Report (issued by DSP) */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR2 Report (DSP)</label>
+                          <select value={filters.reportPR2} onChange={(e) => setFilters({ ...filters, reportPR2: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR2 Date From</label>
+                          <input type="date" value={filters.reportPR2DateFrom} onChange={(e) => setFilters({ ...filters, reportPR2DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR2 Date To</label>
+                          <input type="date" value={filters.reportPR2DateTo} onChange={(e) => setFilters({ ...filters, reportPR2DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+
+                        {/* PR3 Report (issued by DSP) */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR3 Report (DSP)</label>
+                          <select value={filters.reportPR3} onChange={(e) => setFilters({ ...filters, reportPR3: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR3 Date From</label>
+                          <input type="date" value={filters.reportPR3DateFrom} onChange={(e) => setFilters({ ...filters, reportPR3DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">PR3 Date To</label>
+                          <input type="date" value={filters.reportPR3DateTo} onChange={(e) => setFilters({ ...filters, reportPR3DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+
+                        {/* FPR Report */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Report</label>
+                          <select value={filters.reportFPR} onChange={(e) => setFilters({ ...filters, reportFPR: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Date From</label>
+                          <input type="date" value={filters.reportFPRDateFrom} onChange={(e) => setFilters({ ...filters, reportFPRDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Date To</label>
+                          <input type="date" value={filters.reportFPRDateTo} onChange={(e) => setFilters({ ...filters, reportFPRDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <TimeAgoFilter
+                            value={filters.reportFPRIssuedMonthsAgo}
+                            onChange={(val) => setFilters({ ...filters, reportFPRIssuedMonthsAgo: val })}
+                            label="FPR Issued More Than"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Without Charge Sheet</label>
+                          <label className="inline-flex items-center gap-2 text-sm pt-2">
+                            <input
+                              type="checkbox"
+                              checked={filters.reportFPRWithoutChargesheet}
+                              onChange={(e) => setFilters({ ...filters, reportFPRWithoutChargesheet: e.target.checked })}
+                            />
+                            FPR issued but charge sheet not submitted
+                          </label>
+                        </div>
+
+                        {/* Final Order */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Order</label>
+                          <select value={filters.reportFinalOrder} onChange={(e) => setFilters({ ...filters, reportFinalOrder: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Order Date From</label>
+                          <input type="date" value={filters.reportFinalOrderDateFrom} onChange={(e) => setFilters({ ...filters, reportFinalOrderDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Order Date To</label>
+                          <input type="date" value={filters.reportFinalOrderDateTo} onChange={(e) => setFilters({ ...filters, reportFinalOrderDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <TimeAgoFilter
+                            value={filters.reportFinalOrderIssuedMonthsAgo}
+                            onChange={(val) => setFilters({ ...filters, reportFinalOrderIssuedMonthsAgo: val })}
+                            label="Final Order Issued More Than"
+                          />
+                        </div>
+
+                        {/* Final Chargesheet */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Chargesheet</label>
+                          <select value={filters.reportFinalChargesheet} onChange={(e) => setFilters({ ...filters, reportFinalChargesheet: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Chargesheet Date From</label>
+                          <input type="date" value={filters.reportFinalChargesheetDateFrom} onChange={(e) => setFilters({ ...filters, reportFinalChargesheetDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Chargesheet Date To</label>
+                          <input type="date" value={filters.reportFinalChargesheetDateTo} onChange={(e) => setFilters({ ...filters, reportFinalChargesheetDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <TimeAgoFilter
+                            value={filters.reportFinalChargesheetIssuedMonthsAgo}
+                            onChange={(val) => setFilters({ ...filters, reportFinalChargesheetIssuedMonthsAgo: val })}
+                            label="Final Chargesheet Issued More Than"
+                          />
+                        </div>
+
+                        {/* Chargesheet submitted in Court */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Chargesheet submitted in Court</label>
+                          <select value={filters.finalChargesheetSubmitted} onChange={(e) => setFilters({ ...filters, finalChargesheetSubmitted: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
+                            <option value="">All</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Submission Date From</label>
+                          <input type="date" value={filters.finalChargesheetSubmissionDateFrom} onChange={(e) => setFilters({ ...filters, finalChargesheetSubmissionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Submission Date To</label>
+                          <input type="date" value={filters.finalChargesheetSubmissionDateTo} onChange={(e) => setFilters({ ...filters, finalChargesheetSubmissionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
                         </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Report Filters */}
-                  <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => toggleSection('reports')}
-                      className="w-full p-5 flex items-center justify-between hover:bg-slate-100 transition-colors"
-                    >
-                      <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                        <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14 2 14 8 20 8" />
-                          <line x1="16" y1="13" x2="8" y2="13" />
-                          <line x1="16" y1="17" x2="8" y2="17" />
-                        </svg>
-                        Report Filters
-                      </h3>
-                      <svg
-                        className={`h-5 w-5 text-slate-600 transition-transform ${expandedSections.reports ? 'rotate-180' : ''}`}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </button>
-                    {expandedSections.reports && (
-                      <div className="px-5 pb-5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                          {/* Aggregate Report Filters */}
-                          <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-                            <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-1.5">Last R Report Not Updated For (Days)</label>
-                              <input
-                                type="number"
-                                min="0"
-                                value={filters.reportRNotUpdatedDays}
-                                onChange={(e) => setFilters({ ...filters, reportRNotUpdatedDays: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                                placeholder="Enter days"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-1.5">Last PR Report Not Updated For (Days)</label>
-                              <input
-                                type="number"
-                                min="0"
-                                value={filters.reportPRNotUpdatedDays}
-                                onChange={(e) => setFilters({ ...filters, reportPRNotUpdatedDays: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-                                placeholder="Enter days"
-                              />
-                            </div>
-                          </div>
-
-                          {/* R1 Report */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R1 Report</label>
-                            <select value={filters.reportR1} onChange={(e) => setFilters({ ...filters, reportR1: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R1 Date From</label>
-                            <input type="date" value={filters.reportR1DateFrom} onChange={(e) => setFilters({ ...filters, reportR1DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R1 Date To</label>
-                            <input type="date" value={filters.reportR1DateTo} onChange={(e) => setFilters({ ...filters, reportR1DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-
-                          {/* Supervision Report */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervision Report</label>
-                            <select value={filters.reportSupervision} onChange={(e) => setFilters({ ...filters, reportSupervision: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervision Date From</label>
-                            <input type="date" value={filters.reportSupervisionDateFrom} onChange={(e) => setFilters({ ...filters, reportSupervisionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervision Date To</label>
-                            <input type="date" value={filters.reportSupervisionDateTo} onChange={(e) => setFilters({ ...filters, reportSupervisionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-
-                          {/* R2 Report */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R2 Report</label>
-                            <select value={filters.reportR2} onChange={(e) => setFilters({ ...filters, reportR2: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R2 Date From</label>
-                            <input type="date" value={filters.reportR2DateFrom} onChange={(e) => setFilters({ ...filters, reportR2DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R2 Date To</label>
-                            <input type="date" value={filters.reportR2DateTo} onChange={(e) => setFilters({ ...filters, reportR2DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-
-                          {/* R3 Report */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R3 Report</label>
-                            <select value={filters.reportR3} onChange={(e) => setFilters({ ...filters, reportR3: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R3 Date From</label>
-                            <input type="date" value={filters.reportR3DateFrom} onChange={(e) => setFilters({ ...filters, reportR3DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">R3 Date To</label>
-                            <input type="date" value={filters.reportR3DateTo} onChange={(e) => setFilters({ ...filters, reportR3DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-
-                          {/* PR1 Report (issued by DSP) */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR1 Report (DSP)</label>
-                            <select value={filters.reportPR1} onChange={(e) => setFilters({ ...filters, reportPR1: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR1 Date From</label>
-                            <input type="date" value={filters.reportPR1DateFrom} onChange={(e) => setFilters({ ...filters, reportPR1DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR1 Date To</label>
-                            <input type="date" value={filters.reportPR1DateTo} onChange={(e) => setFilters({ ...filters, reportPR1DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-
-                          {/* PR2 Report (issued by DSP) */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR2 Report (DSP)</label>
-                            <select value={filters.reportPR2} onChange={(e) => setFilters({ ...filters, reportPR2: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR2 Date From</label>
-                            <input type="date" value={filters.reportPR2DateFrom} onChange={(e) => setFilters({ ...filters, reportPR2DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR2 Date To</label>
-                            <input type="date" value={filters.reportPR2DateTo} onChange={(e) => setFilters({ ...filters, reportPR2DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-
-                          {/* PR3 Report (issued by DSP) */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR3 Report (DSP)</label>
-                            <select value={filters.reportPR3} onChange={(e) => setFilters({ ...filters, reportPR3: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR3 Date From</label>
-                            <input type="date" value={filters.reportPR3DateFrom} onChange={(e) => setFilters({ ...filters, reportPR3DateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">PR3 Date To</label>
-                            <input type="date" value={filters.reportPR3DateTo} onChange={(e) => setFilters({ ...filters, reportPR3DateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-
-                          {/* FPR Report */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Report</label>
-                            <select value={filters.reportFPR} onChange={(e) => setFilters({ ...filters, reportFPR: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Date From</label>
-                            <input type="date" value={filters.reportFPRDateFrom} onChange={(e) => setFilters({ ...filters, reportFPRDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Date To</label>
-                            <input type="date" value={filters.reportFPRDateTo} onChange={(e) => setFilters({ ...filters, reportFPRDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <TimeAgoFilter
-                              value={filters.reportFPRIssuedMonthsAgo}
-                              onChange={(val) => setFilters({ ...filters, reportFPRIssuedMonthsAgo: val })}
-                              label="FPR Issued More Than"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">FPR Without Charge Sheet</label>
-                            <label className="inline-flex items-center gap-2 text-sm pt-2">
-                              <input
-                                type="checkbox"
-                                checked={filters.reportFPRWithoutChargesheet}
-                                onChange={(e) => setFilters({ ...filters, reportFPRWithoutChargesheet: e.target.checked })}
-                              />
-                              FPR issued but charge sheet not submitted
-                            </label>
-                          </div>
-
-                          {/* Final Order */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Order</label>
-                            <select value={filters.reportFinalOrder} onChange={(e) => setFilters({ ...filters, reportFinalOrder: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Order Date From</label>
-                            <input type="date" value={filters.reportFinalOrderDateFrom} onChange={(e) => setFilters({ ...filters, reportFinalOrderDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Order Date To</label>
-                            <input type="date" value={filters.reportFinalOrderDateTo} onChange={(e) => setFilters({ ...filters, reportFinalOrderDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <TimeAgoFilter
-                              value={filters.reportFinalOrderIssuedMonthsAgo}
-                              onChange={(val) => setFilters({ ...filters, reportFinalOrderIssuedMonthsAgo: val })}
-                              label="Final Order Issued More Than"
-                            />
-                          </div>
-
-                          {/* Final Chargesheet */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Chargesheet</label>
-                            <select value={filters.reportFinalChargesheet} onChange={(e) => setFilters({ ...filters, reportFinalChargesheet: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Chargesheet Date From</label>
-                            <input type="date" value={filters.reportFinalChargesheetDateFrom} onChange={(e) => setFilters({ ...filters, reportFinalChargesheetDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Final Chargesheet Date To</label>
-                            <input type="date" value={filters.reportFinalChargesheetDateTo} onChange={(e) => setFilters({ ...filters, reportFinalChargesheetDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <TimeAgoFilter
-                              value={filters.reportFinalChargesheetIssuedMonthsAgo}
-                              onChange={(val) => setFilters({ ...filters, reportFinalChargesheetIssuedMonthsAgo: val })}
-                              label="Final Chargesheet Issued More Than"
-                            />
-                          </div>
-
-                          {/* Chargesheet submitted in Court */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Chargesheet submitted in Court</label>
-                            <select value={filters.finalChargesheetSubmitted} onChange={(e) => setFilters({ ...filters, finalChargesheetSubmitted: e.target.value as any })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow">
-                              <option value="">All</option>
-                              <option value="Yes">Yes</option>
-                              <option value="No">No</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Submission Date From</label>
-                            <input type="date" value={filters.finalChargesheetSubmissionDateFrom} onChange={(e) => setFilters({ ...filters, finalChargesheetSubmissionDateFrom: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Submission Date To</label>
-                            <input type="date" value={filters.finalChargesheetSubmissionDateTo} onChange={(e) => setFilters({ ...filters, finalChargesheetSubmissionDateTo: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Actions */}
-              <div className="mt-6 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <span>Showing</span>
-                  <select value={filters.pageSize} onChange={(e) => setFilters({ ...filters, pageSize: Number(e.target.value) as 10 | 25 | 50 })} className="rounded-md border-slate-300">
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                  </select>
-                  <span>per page</span>
-                </div>
-                <div className="flex gap-3">
-                  <button onClick={() => {/* no-op demo search */ }} className="inline-flex items-center gap-2 rounded-md bg-blue-800 px-4 py-2 text-white font-medium shadow-sm hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-700">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-                    Search
-                  </button>
-                  <button
-                    type="button"
-                    onClick={downloadFilteredCsv}
-                    disabled={filtered.length === 0}
-                    className="inline-flex items-center gap-2 rounded-md bg-emerald-700 px-4 py-2 text-white font-medium shadow-sm hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="7 10 12 15 17 10" />
-                      <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Download CSV ({filtered.length})
-                  </button>
-                  <button onClick={reset} className="rounded-md px-4 py-2 font-medium text-slate-700 border border-slate-300 hover:bg-slate-50">
-                    Reset
-                  </button>
-                </div>
+            {/* Actions */}
+            <div className="mt-6 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <span>Showing</span>
+                <select value={filters.pageSize} onChange={(e) => setFilters({ ...filters, pageSize: Number(e.target.value) as 10 | 25 | 50 })} className="rounded-md border-slate-300">
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>per page</span>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => {/* no-op demo search */ }} className="inline-flex items-center gap-2 rounded-md bg-blue-800 px-4 py-2 text-white font-medium shadow-sm hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-700">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                  Search
+                </button>
+                <button
+                  type="button"
+                  onClick={downloadFilteredCsv}
+                  disabled={filtered.length === 0}
+                  className="inline-flex items-center gap-2 rounded-md bg-emerald-700 px-4 py-2 text-white font-medium shadow-sm hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Download CSV ({filtered.length})
+                </button>
+                <button onClick={reset} className="rounded-md px-4 py-2 font-medium text-slate-700 border border-slate-300 hover:bg-slate-50">
+                  Reset
+                </button>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Results Table */}
-          <div className="mt-6 prism-card overflow-hidden">
-            {dataLoading ? (
-              <div className="p-8 text-center">
-                <svg className="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                <p className="text-slate-600">Loading cases...</p>
-              </div>
-            ) : (
-              <>
-                {(filterAlerts.overdue > 0 || filterAlerts.due7 > 0 || filterAlerts.pending > 0) && (
-                  <div className="flex flex-wrap gap-2 border-b border-slate-100 px-4 py-3">
-                    {filterAlerts.overdue > 0 && (
-                      <span className="inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-800 ring-1 ring-red-200">
-                        {filterAlerts.overdue} overdue (from FIR)
-                      </span>
-                    )}
-                    {filterAlerts.due7 > 0 && (
-                      <span className="inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 ring-1 ring-orange-200">
-                        {filterAlerts.due7} due within 7 days
-                      </span>
-                    )}
-                    {filterAlerts.pending > 0 && (
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800 ring-1 ring-blue-200">
-                        {filterAlerts.pending} pending CS (60/90 from FIR)
-                      </span>
-                    )}
-                    <span className="text-xs text-slate-500 self-center">on {filtered.length} filtered case{filtered.length === 1 ? "" : "s"}</span>
-                  </div>
-                )}
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead className="bg-blue-50 text-slate-800">
-                      <tr className="*:\:px-4 *:\:py-3">
-                        <th className="px-4 py-3 text-left font-medium">Case No.</th>
-                        <th className="px-4 py-3 text-left font-medium">Year</th>
-                        <th className="px-4 py-3 text-left font-medium">Case Date</th>
-                        <th className="px-4 py-3 text-left font-medium">Police Station</th>
-                        <th className="px-4 py-3 text-left font-medium">Crime Section</th>
-                        <th className="px-4 py-3 text-left font-medium">Punishment</th>
-                        <th className="px-4 py-3 text-left font-medium">Accused</th>
-                        <th className="px-4 py-3 text-left font-medium">Case Status </th>
-                        <th className="px-4 py-3 text-left font-medium">Chargesheet Status (from FIR)</th>
-                        <th className="px-4 py-3 text-left font-medium">Case Decision Status</th>
-                        <th className="px-4 py-3 text-right font-medium whitespace-nowrap">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-200">
-                      {filtered.slice((currentPage - 1) * filters.pageSize, currentPage * filters.pageSize).map((row) => {
-                        const total = row.accused.length;
-                        const arrested = row.accused.filter((a) => a.status === "Arrested").length;
-                        const unarrested = row.accused.filter((a) => a.status === "Not arrested").length;
-                        const matchedAccused = row.matchedAccused || [];
-
-                        return (
-                          <>
-                            <tr key={row.caseNo} className="hover:bg-slate-50 odd:bg-white even:bg-slate-50/50">
-                              <td className="px-4 py-3 whitespace-nowrap">{row.caseNo}</td>
-                              <td className="px-4 py-3">{row.year}</td>
-                              <td className="px-4 py-3">{row.caseDate ? new Date(row.caseDate).toLocaleDateString() : "—"}</td>
-                              <td className="px-4 py-3">{row.policeStation}</td>
-                              <td className="px-4 py-3">{row.crimeSection}</td>
-                              <td className="px-4 py-3">{row.punishmentCategory}</td>
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="font-medium text-slate-900">{total}</span>
-                                  <span className="text-slate-400">/</span>
-                                  <span className="text-red-600 font-medium">{arrested}</span>
-                                  <span className="text-slate-400">/</span>
-                                  <span className="text-green-600 font-medium">{unarrested}</span>
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">
-                                <div className="flex flex-col gap-2">
-                                  <div className="flex items-center gap-2">
-                                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${statusBadgeColor(row.caseStatus)}`}>
-                                      {row.caseStatus}
-                                    </span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">
-                                {(() => {
-                                  const alert = calculateChargesheetAlert(row);
-                                  if (!alert) return <span className="text-slate-400 text-xs">—</span>;
-                                  return (
-                                    <div className={`flex items-center gap-1.5 text-xs font-medium ${alert.isOverdue ? "text-red-700" : alert.daysRemaining <= 7 ? "text-orange-700" : "text-blue-700"
-                                      }`}>
-                                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <polyline points="12 6 12 12 16 14" />
-                                      </svg>
-                                      <span>
-                                        {alert.isOverdue
-                                          ? `Overdue: ${Math.abs(alert.daysRemaining)}d (${alert.deadlineType})`
-                                          : `${alert.daysRemaining} days left (${alert.deadlineType})`}
-                                      </span>
-                                    </div>
-                                  );
-                                })()}
-                              </td>
-                              <td className="px-4 py-3">
-                                {row.caseDecisionStatus ? (
-                                  <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${row.caseDecisionStatus === "True" ? "bg-green-100 text-green-800 ring-green-600/20" :
-                                    row.caseDecisionStatus === "False" ? "bg-red-100 text-red-800 ring-red-600/20" :
-                                      row.caseDecisionStatus === "Partial Pendency" ? "bg-yellow-100 text-yellow-800 ring-yellow-600/20" :
-                                        row.caseDecisionStatus === "Complete Pendency" ? "bg-orange-100 text-orange-800 ring-orange-600/20" :
-                                          "bg-slate-100 text-slate-800 ring-slate-600/20"
-                                    }`}>
-                                    {row.caseDecisionStatus}
-                                  </span>
-                                ) : (
-                                  <span className="text-slate-400 text-xs">—</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-right whitespace-nowrap">
-                                <Link
-                                  href={`/cases/${row._id}`}
-                                  title="Open detailed case timeline"
-                                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-slate-50"
-                                >
-                                  View Case
-                                </Link>
-                              </td>
-                            </tr>
-                            {matchedAccused.length > 0 && (
-                              <tr key={`${row.caseNo}-matched`} className="bg-blue-50/30">
-                                <td colSpan={8} className="px-4 py-2">
-                                  <div className="text-xs text-slate-600">
-                                    <span className="font-medium">Matched Accused:</span>{" "}
-                                    {matchedAccused.map((acc, idx) => (
-                                      <span key={idx}>
-                                        <span className="font-medium">{acc.name}</span>
-                                        <span className="text-slate-500"> ({acc.status})</span>
-                                        {idx < matchedAccused.length - 1 && ", "}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </td>
-                              </tr>
-                            )}
-                          </>
-                        );
-                      })}
-                      {filtered.length === 0 && (
-                        <tr>
-                          <td colSpan={8} className="px-4 py-10 text-center text-slate-500">No results found. Adjust filters and try again.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+        {/* Results Table */}
+        <div className="mt-6 prism-card overflow-hidden">
+          {dataLoading ? (
+            <div className="p-8 text-center">
+              <svg className="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              <p className="text-slate-600">Loading cases...</p>
+            </div>
+          ) : (
+            <>
+              {(filterAlerts.overdue > 0 || filterAlerts.due7 > 0 || filterAlerts.pending > 0) && (
+                <div className="flex flex-wrap gap-2 border-b border-slate-100 px-4 py-3">
+                  {filterAlerts.overdue > 0 && (
+                    <span className="inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-800 ring-1 ring-red-200">
+                      {filterAlerts.overdue} overdue (from FIR)
+                    </span>
+                  )}
+                  {filterAlerts.due7 > 0 && (
+                    <span className="inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 ring-1 ring-orange-200">
+                      {filterAlerts.due7} due within 7 days
+                    </span>
+                  )}
+                  {filterAlerts.pending > 0 && (
+                    <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800 ring-1 ring-blue-200">
+                      {filterAlerts.pending} pending CS (60/90 from FIR)
+                    </span>
+                  )}
+                  <span className="text-xs text-slate-500 self-center">on {filtered.length} filtered case{filtered.length === 1 ? "" : "s"}</span>
                 </div>
-
-                {/* Pagination */}
-                <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-white text-sm">
-                  <div className="text-slate-600">
-                    Showing <span className="font-medium">{Math.min((currentPage - 1) * filters.pageSize + 1, filtered.length)}</span> to <span className="font-medium">{Math.min(currentPage * filters.pageSize, filtered.length)}</span> of <span className="font-medium">{filtered.length}</span> entries
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="px-3 py-1.5 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Prev
-                    </button>
-
-                    {Array.from({ length: Math.min(5, Math.ceil(filtered.length / filters.pageSize)) }, (_, i) => {
-                      // Logic to show a window of pages around current page
-                      const totalPages = Math.ceil(filtered.length / filters.pageSize);
-                      let startPage = Math.max(1, currentPage - 2);
-                      const endPage = Math.min(totalPages, startPage + 4);
-
-                      if (endPage - startPage < 4) {
-                        startPage = Math.max(1, endPage - 4);
-                      }
-
-                      const pageNum = startPage + i;
-                      if (pageNum > totalPages) return null;
+              )}
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-blue-50 text-slate-800">
+                    <tr className="*:\:px-4 *:\:py-3">
+                      <th className="px-4 py-3 text-left font-medium">Case No.</th>
+                      <th className="px-4 py-3 text-left font-medium">Year</th>
+                      <th className="px-4 py-3 text-left font-medium">Case Date</th>
+                      <th className="px-4 py-3 text-left font-medium">Police Station</th>
+                      <th className="px-4 py-3 text-left font-medium">Crime Section</th>
+                      <th className="px-4 py-3 text-left font-medium">Punishment</th>
+                      <th className="px-4 py-3 text-left font-medium">Accused</th>
+                      <th className="px-4 py-3 text-left font-medium">Case Status </th>
+                      <th className="px-4 py-3 text-left font-medium">Chargesheet Status (from FIR)</th>
+                      <th className="px-4 py-3 text-left font-medium">Case Decision Status</th>
+                      <th className="px-4 py-3 text-right font-medium whitespace-nowrap">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {filtered.slice((currentPage - 1) * filters.pageSize, currentPage * filters.pageSize).map((row) => {
+                      const total = row.accused.length;
+                      const arrested = row.accused.filter((a) => a.status === "Arrested").length;
+                      const unarrested = row.accused.filter((a) => a.status === "Not arrested").length;
+                      const matchedAccused = row.matchedAccused || [];
 
                       return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-1.5 border rounded-md ${currentPage === pageNum
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "border-slate-300 text-slate-700 hover:bg-slate-50"
-                            }`}
-                        >
-                          {pageNum}
-                        </button>
+                        <>
+                          <tr key={row.caseNo} className="hover:bg-slate-50 odd:bg-white even:bg-slate-50/50">
+                            <td className="px-4 py-3 whitespace-nowrap">{row.caseNo}</td>
+                            <td className="px-4 py-3">{row.year}</td>
+                            <td className="px-4 py-3">{row.caseDate ? new Date(row.caseDate).toLocaleDateString() : "—"}</td>
+                            <td className="px-4 py-3">{row.policeStation}</td>
+                            <td className="px-4 py-3">{row.crimeSection}</td>
+                            <td className="px-4 py-3">{row.punishmentCategory}</td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-medium text-slate-900">{total}</span>
+                                <span className="text-slate-400">/</span>
+                                <span className="text-red-600 font-medium">{arrested}</span>
+                                <span className="text-slate-400">/</span>
+                                <span className="text-green-600 font-medium">{unarrested}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
+                                  <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${statusBadgeColor(row.caseStatus)}`}>
+                                    {row.caseStatus}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              {(() => {
+                                const alert = calculateChargesheetAlert(row);
+                                if (!alert) return <span className="text-slate-400 text-xs">—</span>;
+                                return (
+                                  <div className={`flex items-center gap-1.5 text-xs font-medium ${alert.isOverdue ? "text-red-700" : alert.daysRemaining <= 7 ? "text-orange-700" : "text-blue-700"
+                                    }`}>
+                                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    <span>
+                                      {alert.isOverdue
+                                        ? `Overdue: ${Math.abs(alert.daysRemaining)}d (${alert.deadlineType})`
+                                        : `${alert.daysRemaining} days left (${alert.deadlineType})`}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
+                            </td>
+                            <td className="px-4 py-3">
+                              {row.caseDecisionStatus ? (
+                                <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${row.caseDecisionStatus === "True" ? "bg-green-100 text-green-800 ring-green-600/20" :
+                                  row.caseDecisionStatus === "False" ? "bg-red-100 text-red-800 ring-red-600/20" :
+                                    row.caseDecisionStatus === "Partial Pendency" ? "bg-yellow-100 text-yellow-800 ring-yellow-600/20" :
+                                      row.caseDecisionStatus === "Complete Pendency" ? "bg-orange-100 text-orange-800 ring-orange-600/20" :
+                                        "bg-slate-100 text-slate-800 ring-slate-600/20"
+                                  }`}>
+                                  {row.caseDecisionStatus}
+                                </span>
+                              ) : (
+                                <span className="text-slate-400 text-xs">—</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-right whitespace-nowrap">
+                              <Link
+                                href={`/cases/${row._id}`}
+                                title="Open detailed case timeline"
+                                className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-slate-50"
+                              >
+                                View Case
+                              </Link>
+                            </td>
+                          </tr>
+                          {matchedAccused.length > 0 && (
+                            <tr key={`${row.caseNo}-matched`} className="bg-blue-50/30">
+                              <td colSpan={8} className="px-4 py-2">
+                                <div className="text-xs text-slate-600">
+                                  <span className="font-medium">Matched Accused:</span>{" "}
+                                  {matchedAccused.map((acc, idx) => (
+                                    <span key={idx}>
+                                      <span className="font-medium">{acc.name}</span>
+                                      <span className="text-slate-500"> ({acc.status})</span>
+                                      {idx < matchedAccused.length - 1 && ", "}
+                                    </span>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       );
                     })}
+                    {filtered.length === 0 && (
+                      <tr>
+                        <td colSpan={8} className="px-4 py-10 text-center text-slate-500">No results found. Adjust filters and try again.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-                    <button
-                      onClick={() => setCurrentPage(p => Math.min(Math.ceil(filtered.length / filters.pageSize), p + 1))}
-                      disabled={currentPage >= Math.ceil(filtered.length / filters.pageSize)}
-                      className="px-3 py-1.5 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Next
-                    </button>
-                  </div>
+              {/* Pagination */}
+              <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-white text-sm">
+                <div className="text-slate-600">
+                  Showing <span className="font-medium">{Math.min((currentPage - 1) * filters.pageSize + 1, filtered.length)}</span> to <span className="font-medium">{Math.min(currentPage * filters.pageSize, filtered.length)}</span> of <span className="font-medium">{filtered.length}</span> entries
                 </div>
-              </>
-            )}
-          </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Prev
+                  </button>
+
+                  {Array.from({ length: Math.min(5, Math.ceil(filtered.length / filters.pageSize)) }, (_, i) => {
+                    // Logic to show a window of pages around current page
+                    const totalPages = Math.ceil(filtered.length / filters.pageSize);
+                    let startPage = Math.max(1, currentPage - 2);
+                    const endPage = Math.min(totalPages, startPage + 4);
+
+                    if (endPage - startPage < 4) {
+                      startPage = Math.max(1, endPage - 4);
+                    }
+
+                    const pageNum = startPage + i;
+                    if (pageNum > totalPages) return null;
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`px-3 py-1.5 border rounded-md ${currentPage === pageNum
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(Math.ceil(filtered.length / filters.pageSize), p + 1))}
+                    disabled={currentPage >= Math.ceil(filtered.length / filters.pageSize)}
+                    className="px-3 py-1.5 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Add Reason Modal */}
         {showAddReasonModal && (

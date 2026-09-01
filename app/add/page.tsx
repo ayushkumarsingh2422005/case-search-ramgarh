@@ -1305,7 +1305,7 @@ export default function AddCase() {
                       onChange={handleInputChange}
                       className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                     />
-                    Identify property/professional crimes
+                    Identify property/organized crime
                   </label>
                 </div>
                 <div className="sm:col-span-2 lg:col-span-1">
